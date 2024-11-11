@@ -33,6 +33,7 @@ public class frmMain extends javax.swing.JFrame {
         btEmployess = new javax.swing.JButton();
         btUser = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         myDesktop = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -54,11 +55,23 @@ public class frmMain extends javax.swing.JFrame {
         });
 
         btUser.setText("User");
+        btUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btUserActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Position");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Roles");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
             }
         });
 
@@ -70,6 +83,10 @@ public class frmMain extends javax.swing.JFrame {
             .addComponent(btEmployess, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btDerpartment, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addGap(22, 22, 22))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -82,7 +99,9 @@ public class frmMain extends javax.swing.JFrame {
                 .addComponent(btEmployess, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 176, Short.MAX_VALUE))
+                .addGap(40, 40, 40)
+                .addComponent(jButton2)
+                .addGap(0, 113, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout myDesktopLayout = new javax.swing.GroupLayout(myDesktop);
@@ -135,6 +154,20 @@ public class frmMain extends javax.swing.JFrame {
         frm.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
+        // TODO add your handling code here:
+        frmUser frm = new frmUser();
+        myDesktop.add(frm);
+        frm.setVisible(true);
+    }//GEN-LAST:event_btUserActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        frmRole frm = new frmRole();
+        myDesktop.add(frm);
+        frm.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -178,6 +211,7 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JButton btEmployess;
     private javax.swing.JButton btUser;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JDesktopPane myDesktop;
     // End of variables declaration//GEN-END:variables

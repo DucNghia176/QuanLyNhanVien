@@ -43,5 +43,23 @@ public class get {
             JOptionPane.showMessageDialog(null, "Lỗi tải dữ liệu chức vụ: " + e.getMessage());
         }
     }
+    
+    public static void loadRoleToComboBox(JComboBox<String> comboBox) { //lấy ra từ chuc vu
+        try {
+            Connect cn = new Connect();
+            ResultSet resultSet = cn.selectQuery("SELECT roleId, roleName FROM roles", new Object[0]);
+
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            while (resultSet.next()) {
+                String roleId = resultSet.getString("roleId");
+                String roleName = resultSet.getString("roleName");
+                model.addElement(roleId + " - " + roleName);
+            }
+
+            comboBox.setModel(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi tải dữ liệu chức vụ: " + e.getMessage());
+        }
+    }
 }
 

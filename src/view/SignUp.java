@@ -1,5 +1,7 @@
 
-package loginandsignup;
+package view;
+
+import view.Login;
 
 
 public class SignUp extends javax.swing.JFrame {
@@ -38,7 +40,6 @@ public class SignUp extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sign Up");
-        setPreferredSize(new java.awt.Dimension(800, 500));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));

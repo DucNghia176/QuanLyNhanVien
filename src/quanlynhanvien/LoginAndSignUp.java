@@ -1,5 +1,7 @@
 
-package loginandsignup;
+package quanlynhanvien;
+
+import view.Login;
 
 public class LoginAndSignUp {
 
