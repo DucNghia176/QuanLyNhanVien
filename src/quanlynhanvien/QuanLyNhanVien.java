@@ -22,5 +22,4 @@ public class QuanLyNhanVien {
         frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frm.setVisible(true);
     }
-    
 }

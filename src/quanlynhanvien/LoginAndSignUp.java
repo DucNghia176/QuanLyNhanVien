@@ -1,14 +1,14 @@
 
 package quanlynhanvien;
 
-import view.Login;
+import view.frmLogin;
 
 public class LoginAndSignUp {
 
 
     public static void main(String[] args) {
 
-        Login LoginFrame = new Login();
+        frmLogin LoginFrame = new frmLogin();
         LoginFrame.setVisible(true);
         LoginFrame.pack();
         LoginFrame.setLocationRelativeTo(null); 

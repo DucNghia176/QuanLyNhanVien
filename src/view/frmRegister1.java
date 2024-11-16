@@ -8,9 +8,9 @@ import javax.swing.JOptionPane;
 import process.check;
 import view.frmLogin;
 
-public class frmRegister extends javax.swing.JFrame {
+public class frmRegister1 extends javax.swing.JFrame {
 
-    public frmRegister() {
+    public frmRegister1() {
         initComponents();
         pack();
         setSize(879, 635);
@@ -18,11 +18,9 @@ public class frmRegister extends javax.swing.JFrame {
     }
 
     public boolean  createRegister() {
-        String name = txtUsername.getText().trim();
-        char[] password = txtPassword.getPassword();
-        String email = txtEmail.getText().trim();
-        String phone = txtPhone.getText().trim();
-        char[] Comfirm = txtComfirm.getPassword();
+        String name = txtFullname.getText().trim();
+        String email = txtDate.getText().trim();
+        String phone = txtGender.getText().trim();
 
         // Kiểm tra nếu mã phòng hợp lệ
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
@@ -35,13 +33,7 @@ public class frmRegister extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Username có ít nhất 10 kí tự!");
             return false;  // Dừng thực hiện nếu có lỗi
         }
-
-        // Kiểm tra tên đã tồn tại 
-        if (isUserExist(name)) {
-            JOptionPane.showMessageDialog(null, "Tên user đã tồn tại!");
-            return false;  // Dừng thực hiện nếu đã tồn tại
-        }
-
+        
         // Sử dụng hàm kiểm tra độ dài và định dạng số điện thoại
         if (!check.isValidPhoneNumber(phone)) {
             JOptionPane.showMessageDialog(null, "Số điện thoại phải có ít nhất 10 chữ số!");
@@ -54,24 +46,11 @@ public class frmRegister extends javax.swing.JFrame {
             return false;  // Dừng thực hiện nếu có lỗi
         }
 
-        // Kiểm tra độ dài mật khẩu
-        if (!check.isValidPasswordLength(password)) {
-            JOptionPane.showMessageDialog(null, "Mật khẩu phải có ít nhất 8 ký tự!");
-            return false;
-        }
-
-        if (!Arrays.equals(password, Comfirm)) {
-            JOptionPane.showMessageDialog(null, "Mật khẩu và xác nhận mật khẩu không khớp!");
-            return false; // Dừng thực hiện nếu mật khẩu không khớp
-        }
-
         int roleId = 2;
         Object[] argv = new Object[5];
         argv[0] = name;
-        argv[1] = String.valueOf(password);
         argv[2] = email;
         argv[3] = phone;
-        argv[4] = roleId;
 
         try {
             Connect cn = new Connect();
@@ -94,32 +73,9 @@ public class frmRegister extends javax.swing.JFrame {
     }
 
     public void clearText() {
-        txtUsername.setText("");
-        txtPassword.setText("");
-        txtEmail.setText("");
-        txtPhone.setText("");
-        txtComfirm.setText("");
-    }
-
-    public boolean isUserExist(String username) {
-        try {
-            Connect cn = new Connect();
-
-            // Kiểm tra nếu posId đã tồn tại
-            String query = "SELECT userId FROM users WHERE username = ?";
-            ResultSet resultSet = cn.selectQuery(query, new Object[]{username});
-
-            // Nếu kết quả có dữ liệu, tức là tồn tại
-            if (resultSet.next()) {
-                return true;  // posId hoặc posName đã tồn tại
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi kiểm tra dữ liệu: " + e.getMessage());
-            System.out.println(e);
-        }
-
-        return false;  // Nếu không tìm thấy, thì không tồn tại
+        txtFullname.setText("");
+        txtDate.setText("");
+        txtGender.setText("");
     }
 
     @SuppressWarnings("unchecked")
@@ -134,17 +90,11 @@ public class frmRegister extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtUsername = new javax.swing.JTextField();
+        txtFullname = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        txtEmail = new javax.swing.JTextField();
+        txtDate = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JPasswordField();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        txtComfirm = new javax.swing.JPasswordField();
-        txtPhone = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
+        txtGender = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -188,13 +138,13 @@ public class frmRegister extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(30, 30, 30)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addGap(64, 64, 64))
         );
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 400, 620);
+        jPanel2.setBounds(0, 0, 400, 420);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -204,46 +154,41 @@ public class frmRegister extends javax.swing.JFrame {
 
         jLabel5.setBackground(new java.awt.Color(102, 102, 102));
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Username");
+        jLabel5.setText("Full name");
 
-        txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtUsername.setForeground(new java.awt.Color(102, 102, 102));
+        txtFullname.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtFullname.setForeground(new java.awt.Color(102, 102, 102));
 
         jLabel6.setBackground(new java.awt.Color(102, 102, 102));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("Email");
+        jLabel6.setText("Date");
 
-        txtEmail.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtEmail.setForeground(new java.awt.Color(102, 102, 102));
-        txtEmail.addActionListener(new java.awt.event.ActionListener() {
+        txtDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtDate.setForeground(new java.awt.Color(102, 102, 102));
+        txtDate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtEmailActionPerformed(evt);
+                txtDateActionPerformed(evt);
             }
         });
 
         jLabel7.setBackground(new java.awt.Color(102, 102, 102));
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Phone");
+        jLabel7.setText("Gender:");
 
-        txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtPassword.setForeground(new java.awt.Color(102, 102, 102));
-
-        jLabel10.setBackground(new java.awt.Color(102, 102, 102));
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel10.setText("Password");
-
-        jLabel11.setBackground(new java.awt.Color(102, 102, 102));
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel11.setText("Comfirm Password");
-
-        txtComfirm.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtComfirm.setForeground(new java.awt.Color(102, 102, 102));
-
-        txtPhone.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtPhone.setForeground(new java.awt.Color(102, 102, 102));
-        txtPhone.addActionListener(new java.awt.event.ActionListener() {
+        txtGender.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtGender.setForeground(new java.awt.Color(102, 102, 102));
+        txtGender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPhoneActionPerformed(evt);
+                txtGenderActionPerformed(evt);
+            }
+        });
+
+        jButton1.setBackground(new java.awt.Color(0, 102, 102));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Register");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -254,29 +199,22 @@ public class frmRegister extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addGap(148, 148, 148)
-                                    .addComponent(jLabel4))
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addGap(44, 44, 44)
-                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel10)
-                                        .addComponent(jLabel5)
-                                        .addComponent(jLabel6)
-                                        .addComponent(jLabel7)
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(txtEmail, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-                                            .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.LEADING))
-                                        .addComponent(txtPhone, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))))
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel11)
-                                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(148, 148, 148)
+                        .addComponent(jLabel4))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(44, 44, 44)
-                        .addComponent(txtComfirm)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtGender, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel7)
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(txtDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                                        .addComponent(txtFullname, javax.swing.GroupLayout.Alignment.LEADING)))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addGap(52, 52, 52))
         );
         jPanel3Layout.setVerticalGroup(
@@ -287,58 +225,22 @@ public class frmRegister extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel10)
-                .addGap(18, 18, 18)
-                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtComfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(69, 69, 69)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(97, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(400, 0, 380, 500);
-
-        jButton2.setForeground(new java.awt.Color(255, 51, 51));
-        jButton2.setText("Login");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton2);
-        jButton2.setBounds(660, 570, 84, 31);
-
-        jLabel8.setText("I've an account");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
-        jPanel1.add(jLabel8);
-        jLabel8.setBounds(450, 580, 120, 16);
-
-        jButton1.setBackground(new java.awt.Color(0, 102, 102));
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Register");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton1);
-        jButton1.setBounds(440, 510, 91, 37);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -359,40 +261,25 @@ public class frmRegister extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        frmLogin LoginFrame = new frmLogin();
-        LoginFrame.setVisible(true);
-        LoginFrame.setLocationRelativeTo(null);
-        this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtEmailActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         boolean success = createRegister();
         if (success) {
             this.dispose();
-            new frmRegister1().setVisible(true);
+            new frmLogin().setVisible(true);
         } else {
             // Hiển thị thông báo hoặc xử lý khi đăng ký không thành công
             JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+    private void txtGenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGenderActionPerformed
         // TODO add your handling code here:
-        frmLogin frm = new frmLogin();
-        frm.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jLabel8MouseClicked
+    }//GEN-LAST:event_txtGenderActionPerformed
 
-    private void txtPhoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPhoneActionPerformed
+    private void txtDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDateActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtPhoneActionPerformed
+    }//GEN-LAST:event_txtDateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -400,24 +287,18 @@ public class frmRegister extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPasswordField txtComfirm;
-    private javax.swing.JTextField txtEmail;
-    private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtPhone;
-    private javax.swing.JTextField txtUsername;
+    private javax.swing.JTextField txtDate;
+    private javax.swing.JTextField txtFullname;
+    private javax.swing.JTextField txtGender;
     // End of variables declaration//GEN-END:variables
 }

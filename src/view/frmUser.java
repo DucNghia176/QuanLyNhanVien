@@ -23,6 +23,8 @@ public class frmUser extends javax.swing.JInternalFrame {
      */
     public frmUser() {
         initComponents();
+        getUser();
+        
         boxRoles();
     }
 
@@ -40,14 +42,14 @@ public class frmUser extends javax.swing.JInternalFrame {
             try (ResultSet resultSet = cn.selectQuery(query, new Object[0])) {
                 while (resultSet.next()) {
                     Vector v = new Vector();
-                    v.add(resultSet.getInt("userId")); // Thêm EmployeeID vào Vector
-                    v.add(resultSet.getString("username")); // Thêm Name vào Vector
+                    v.add(resultSet.getInt("userId")); 
+                    v.add(resultSet.getString("username")); 
                     v.add(resultSet.getString("password"));
-                    v.add(resultSet.getString("email")); // Thêm Position vào Vector
-                    v.add(resultSet.getBigDecimal("phone")); // Thêm Salary vào Vector
-                    v.add(resultSet.getString("empId")); // Thêm ShiftCount vào Vector
-                    v.add(resultSet.getString("roleId")); // Thêm Email vào Vector
-                    dt.addRow(v); // Thêm Vector vào bảng
+                    v.add(resultSet.getString("email")); 
+                    v.add(resultSet.getBigDecimal("phone")); 
+                    v.add(resultSet.getString("empId")); 
+                    v.add(resultSet.getString("roleId")); 
+                    dt.addRow(v); 
                 }
                 System.out.println("Lấy dữ liệu thành công từ Users");
             }
@@ -60,7 +62,7 @@ public class frmUser extends javax.swing.JInternalFrame {
     }
 
     public void addUser() {
-        String userid = txtId.getText().trim();
+//        String userid = txtId.getText().trim();
         String name = txtName.getText().trim();
         String password = txtPassword.getText().trim();
         String email = txtEmail.getText().trim();
@@ -69,11 +71,11 @@ public class frmUser extends javax.swing.JInternalFrame {
         String employees = txtEployeesID.getText().trim();
         
 
-        // Kiểm tra nếu mã phòng hợp lệ
-        if (userid.isEmpty() || !userid.matches("\\d+")) {
-            JOptionPane.showMessageDialog(null, "Vui lòng nhập mã user hợp lệ!");
-            return;  // Dừng thực hiện nếu có lỗi
-        }
+//        // Kiểm tra nếu mã phòng hợp lệ
+//        if (userid.isEmpty() || !userid.matches("\\d+")) {
+//            JOptionPane.showMessageDialog(null, "Vui lòng nhập mã user hợp lệ!");
+//            return;  // Dừng thực hiện nếu có lỗi
+//        }
 
         // Kiểm tra nếu mã chức vụ hoặc tên chức vụ đã tồn tại
         if (isUserExist(name)) {
@@ -82,7 +84,7 @@ public class frmUser extends javax.swing.JInternalFrame {
         }
 
         Object[] argv = new Object[7];
-        argv[0] = Integer.parseInt(userid);
+//        argv[0] = Integer.parseInt(userid);
         argv[1] = name;
         argv[2] = password;
         argv[3] = email;
@@ -92,90 +94,17 @@ public class frmUser extends javax.swing.JInternalFrame {
 
         try {
             Connect cn = new Connect();
-            int rs = cn.executeQuery("INSERT INTO users (userId, username, password, email, phone, empId, roleId) VALUES (?, ?, ?, ?, ?, ?, ?)", argv);
+            int rs = cn.executeQuery("INSERT INTO users (username, password, email, phone, empId, roleId) VALUES (?, ?, ?, ?, ?, ?)", argv);
             if (rs > 0) {
-                JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu id:" + userid);
+                JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu ");
 
                 // Xóa dữ liệu trong các trường nhập liệu sau khi thêm thành công
                 clearText();
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu id:" + userid + e);
+            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu"+  e);
             System.out.println(e);
-        }
-    }
-
-    public int updateUser() {
-        // Lấy deptId và deptName từ các trường nhập liệu
-        String posId = txtId.getText().trim();
-        String posName = txtName.getText().trim();
-
-        if (posId.isEmpty() || !posId.matches("\\d+")) {
-            JOptionPane.showMessageDialog(null, "Vui lòng nhập mã chức vụ hợp lệ!");
-            return 0;
-        }
-
-        if (posName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Vui lòng nhập tên user!");
-            return 0;
-        }
-
-        // Kiểm tra nếu mã chức vụ hoặc tên chức vụ đã tồn tại
-        if (isUserExist(posName)) {
-            JOptionPane.showMessageDialog(null, "Tên user đã tồn tại!");
-            return 0;  // Dừng thực hiện nếu đã tồn tại
-        }
-
-        Connect cn = null; // Khai báo kết nối
-
-        try {
-            cn = new Connect();
-
-            // 1. Kiểm tra xem deptId có tồn tại trong cơ sở dữ liệu không
-            String selectQuery = "SELECT userId FROM users WHERE userId = ?";
-            ResultSet resultSet = cn.selectQuery(selectQuery, new Object[]{Integer.valueOf(posId)});
-            if (!resultSet.next()) {
-                JOptionPane.showMessageDialog(null, "Mã user không tồn tại trong cơ sở dữ liệu!");
-                return 0;
-            }
-
-            // 2. Cập nhật thông tin phòng ban trong bảng departments
-            String deleteDepartment = "UPDATE users SET username = ?, password = ?, email = ?, phone = ?, empId = ?, roleId = ? WHERE userId = ?";
-            Object[] departmentArgs = new Object[]{posName, Integer.valueOf(posId)};
-            int departmentResult = cn.executeQuery(deleteDepartment, departmentArgs);
-
-            if (departmentResult > 0) {
-                JOptionPane.showMessageDialog(null, "Cập nhật thông tin chức vụ thành công!");
-                clearText();
-                return departmentResult; // Trả về số bản ghi đã cập nhật trong departments
-            } else {
-                // Nếu không cập nhật được phòng ban
-                JOptionPane.showMessageDialog(null, "Không thể cập nhật chức vụ.");
-                return 0;
-            }
-
-        } catch (SQLException e) {
-            // Xử lý lỗi SQL nếu có
-            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi SQL: " + e.getMessage());
-            System.out.println(e);
-            return 0;
-
-        } catch (Exception e) {
-            // Xử lý lỗi chung
-            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi: " + e.getMessage());
-            System.out.println(e);
-            return 0;
-
-        } finally {
-            // Đóng kết nối cơ sở dữ liệu nếu được mở
-            if (cn != null) {
-                try {
-                    cn.close(); // Đảm bảo đóng kết nối
-                } catch (SQLException e) {
-                    System.out.println("Không thể đóng kết nối: " + e.getMessage());
-                }
-            }
         }
     }
 
@@ -266,6 +195,11 @@ public class frmUser extends javax.swing.JInternalFrame {
         jLabel6.setText("Employees ID:");
 
         jButton1.setText("Add");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Update");
 
@@ -393,6 +327,11 @@ public class frmUser extends javax.swing.JInternalFrame {
     private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtEmailActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        addUser();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
