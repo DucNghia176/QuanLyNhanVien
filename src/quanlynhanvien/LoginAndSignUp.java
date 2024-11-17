@@ -12,6 +12,7 @@ public class LoginAndSignUp {
         LoginFrame.setVisible(true);
         LoginFrame.pack();
         LoginFrame.setLocationRelativeTo(null); 
+        
+        
     }
-    
 }
