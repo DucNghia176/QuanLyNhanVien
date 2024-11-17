@@ -17,80 +17,59 @@ public class frmRegister extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
-    public boolean  createRegister() {
+    public void createRegister() {
         String name = txtUsername.getText().trim();
         char[] password = txtPassword.getPassword();
         String email = txtEmail.getText().trim();
         String phone = txtPhone.getText().trim();
-        char[] Comfirm = txtComfirm.getPassword();
+        char[] confirmPassword = txtComfirm.getPassword();
 
         // Kiểm tra nếu mã phòng hợp lệ
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
-            return false;  // Dừng thực hiện nếu có lỗi
+            return;  // Dừng thực hiện nếu có lỗi
         }
 
-        // Kiểm tra tên 
+        // Kiểm tra tên
         if (!check.isValidLength(name)) {
             JOptionPane.showMessageDialog(null, "Username có ít nhất 10 kí tự!");
-            return false;  // Dừng thực hiện nếu có lỗi
+            return;  // Dừng thực hiện nếu có lỗi
         }
 
-        // Kiểm tra tên đã tồn tại 
+        // Kiểm tra tên đã tồn tại
         if (isUserExist(name)) {
             JOptionPane.showMessageDialog(null, "Tên user đã tồn tại!");
-            return false;  // Dừng thực hiện nếu đã tồn tại
+            return;  // Dừng thực hiện nếu đã tồn tại
         }
 
         // Sử dụng hàm kiểm tra độ dài và định dạng số điện thoại
         if (!check.isValidPhoneNumber(phone)) {
             JOptionPane.showMessageDialog(null, "Số điện thoại phải có ít nhất 10 chữ số!");
-            return false;  // Dừng thực hiện nếu có lỗi
+            return;  // Dừng thực hiện nếu có lỗi
         }
 
-        // Kiểm tra tên 
+        // Kiểm tra định dạng email
         if (!check.isValidEmailFormat(email)) {
             JOptionPane.showMessageDialog(null, "Email chưa đúng định dạng!");
-            return false;  // Dừng thực hiện nếu có lỗi
+            return;  // Dừng thực hiện nếu có lỗi
         }
 
         // Kiểm tra độ dài mật khẩu
         if (!check.isValidPasswordLength(password)) {
             JOptionPane.showMessageDialog(null, "Mật khẩu phải có ít nhất 8 ký tự!");
-            return false;
+            return;
         }
 
-        if (!Arrays.equals(password, Comfirm)) {
+        if (!Arrays.equals(password, confirmPassword)) {
             JOptionPane.showMessageDialog(null, "Mật khẩu và xác nhận mật khẩu không khớp!");
-            return false; // Dừng thực hiện nếu mật khẩu không khớp
+            return;  // Dừng thực hiện nếu mật khẩu không khớp
         }
 
-        int roleId = 2;
-        Object[] argv = new Object[5];
-        argv[0] = name;
-        argv[1] = String.valueOf(password);
-        argv[2] = email;
-        argv[3] = phone;
-        argv[4] = roleId;
-
-        try {
-            Connect cn = new Connect();
-            int rs = cn.executeQuery("INSERT INTO users (username, password, email, phone, roleId) VALUES (?, ?, ?, ?, ?)", argv);
-            if (rs > 0) {
-                JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu :" + name);
-
-                // Xóa dữ liệu trong các trường nhập liệu sau khi thêm thành công
-                clearText();
-                
-                return true;
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu id:" + name + e);
-            System.out.println(e);
-        }
-        
-        return false;
+        // Chuyển sang frmRegister1
+        frmRegister1 register1 = new frmRegister1(name, String.valueOf(password), email, phone);
+        register1.setVisible(true);
+        register1.setLocationRelativeTo(null);
+        this.dispose(); // Đóng frmRegister sau khi chuyển tới frmRegister1
     }
 
     public void clearText() {
@@ -372,15 +351,7 @@ public class frmRegister extends javax.swing.JFrame {
     }//GEN-LAST:event_txtEmailActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        boolean success = createRegister();
-        if (success) {
-            this.dispose();
-            new frmRegister1().setVisible(true);
-        } else {
-            // Hiển thị thông báo hoặc xử lý khi đăng ký không thành công
-            JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.");
-        }
+        createRegister();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked

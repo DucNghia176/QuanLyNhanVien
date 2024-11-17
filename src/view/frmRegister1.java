@@ -3,7 +3,11 @@ package view;
 import dto.Connect;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import process.check;
@@ -11,72 +15,80 @@ import view.frmLogin;
 
 public class frmRegister1 extends javax.swing.JFrame {
 
-    public frmRegister1() {
+    private String name;
+    private String password;
+    private String email;
+    private String phone;
+
+    // Constructor với tham số
+    public frmRegister1(String name, String password, String email, String phone) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.phone = phone;
         initComponents();
         pack();
-        setSize(879, 635);
+        setSize(600, 400);
         setLocationRelativeTo(null);
     }
 
-    public boolean  createRegister() {
-        String name = txtFullname.getText().trim();
-        String email = txtDate.getText().trim();
-        String phone = txtGender.getText().trim();
-
-        // Kiểm tra nếu mã phòng hợp lệ
-        if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
-            return false;  // Dừng thực hiện nếu có lỗi
-        }
-
-        // Kiểm tra tên 
-        if (!check.isValidLength(name)) {
-            JOptionPane.showMessageDialog(null, "Username có ít nhất 10 kí tự!");
-            return false;  // Dừng thực hiện nếu có lỗi
-        }
-        
-        // Sử dụng hàm kiểm tra độ dài và định dạng số điện thoại
-        if (!check.isValidPhoneNumber(phone)) {
-            JOptionPane.showMessageDialog(null, "Số điện thoại phải có ít nhất 10 chữ số!");
-            return false;  // Dừng thực hiện nếu có lỗi
-        }
-
-        // Kiểm tra tên 
-        if (!check.isValidEmailFormat(email)) {
-            JOptionPane.showMessageDialog(null, "Email chưa đúng định dạng!");
-            return false;  // Dừng thực hiện nếu có lỗi
-        }
-
-        int roleId = 2;
-        Object[] argv = new Object[5];
-        argv[0] = name;
-        argv[2] = email;
-        argv[3] = phone;
-
+    // Phương thức chung để lưu dữ liệu vào cơ sở dữ liệu
+    private boolean saveDataToDatabase(String sql, Object[] params) {
         try {
             Connect cn = new Connect();
-            int rs = cn.executeQuery("INSERT INTO users (username, password, email, phone, roleId) VALUES (?, ?, ?, ?, ?)", argv);
-            if (rs > 0) {
-                JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu :" + name);
-
-                // Xóa dữ liệu trong các trường nhập liệu sau khi thêm thành công
-                clearText();
-                
-                return true;
-            }
-
+            int result = cn.executeQuery(sql, params);
+            return result > 0;
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Lỗi cơ sở dữ liệu: " + e.getMessage());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu id:" + name + e);
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "Có lỗi xảy ra: " + e.getMessage());
         }
-        
+        return false;
+    }
+
+    // Phương thức lưu người dùng vào cơ sở dữ liệu
+    public void saveUserToDatabase() {
+        int roleId = 2;
+        Object[] params = new Object[]{name, password, email, phone, roleId};
+        String sql = "INSERT INTO users (username, password, email, phone, roleId) VALUES (?, ?, ?, ?, ?)";
+        if (saveDataToDatabase(sql, params)) {
+            JOptionPane.showMessageDialog(null, "Thêm mới thành công!");
+        }
+    }
+
+    // Phương thức tạo và lưu thông tin đăng ký nhân viên
+    public boolean createRegister() {
+        String name = txtFullname.getText().trim();
+        Date dob = jdate.getDate();
+        String gender = (String) boxGender.getSelectedItem();
+
+        // Kiểm tra dữ liệu nhập vào
+        if (name.isEmpty() || dob == null || gender.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+            return false;
+        }
+
+        // Định dạng ngày sinh
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(dob);
+
+        Object[] params = new Object[]{name, formattedDate, gender};
+        String sql = "INSERT INTO employees (name, dob, gender) VALUES (?, ?, ?)";
+
+        if (saveDataToDatabase(sql, params)) {
+            JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu: " + name);
+            clearText();
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu: " + name);
+        }
         return false;
     }
 
     public void clearText() {
         txtFullname.setText("");
-        txtDate.setText("");
-        txtGender.setText("");
+        jdate.setDate(null);
+        boxGender.setSelectedIndex(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -93,12 +105,10 @@ public class frmRegister1 extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtFullname = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        txtDate = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        txtGender = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
-        jCalendar1 = new com.toedter.calendar.JCalendar();
+        jdate = new com.toedter.calendar.JDateChooser();
+        boxGender = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sign Up");
@@ -166,25 +176,9 @@ public class frmRegister1 extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Date");
 
-        txtDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtDate.setForeground(new java.awt.Color(102, 102, 102));
-        txtDate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtDateActionPerformed(evt);
-            }
-        });
-
         jLabel7.setBackground(new java.awt.Color(102, 102, 102));
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Gender:");
-
-        txtGender.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtGender.setForeground(new java.awt.Color(102, 102, 102));
-        txtGender.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtGenderActionPerformed(evt);
-            }
-        });
 
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
@@ -195,28 +189,18 @@ public class frmRegister1 extends javax.swing.JFrame {
             }
         });
 
-        jDateChooser1.setDateFormatString("dd-MM-yyyy");
+        jdate.setDateFormatString("dd-MM-yyyy");
+
+        boxGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Nam","Nữ"})
+        );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtGender)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel7)
-                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(txtDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-                                        .addComponent(txtFullname, javax.swing.GroupLayout.Alignment.LEADING)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(148, 148, 148)
@@ -224,12 +208,20 @@ public class frmRegister1 extends javax.swing.JFrame {
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(44, 44, 44)
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addGap(44, 44, 44)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(boxGender, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel7)
+                                    .addComponent(txtFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(0, 86, Short.MAX_VALUE)
-                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,23 +234,19 @@ public class frmRegister1 extends javax.swing.JFrame {
                 .addComponent(txtFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jdate, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69)
+                .addGap(18, 18, 18)
+                .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(56, 56, 56)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addContainerGap(102, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(400, 0, 380, 500);
-        jPanel1.add(jCalendar1);
-        jCalendar1.setBounds(50, 420, 190, 141);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -280,66 +268,26 @@ public class frmRegister1 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        boolean success = createRegister();
-        if (success) {
-            this.dispose();
-            new frmLogin().setVisible(true);
-        } else {
-            // Hiển thị thông báo hoặc xử lý khi đăng ký không thành công
-            JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.");
+        saveUserToDatabase();
+        try {
+            boolean success = createRegister();
+            if (success) {
+                this.setVisible(false);
+                new frmLogin().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Có lỗi xảy ra: " + ex.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void txtGenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGenderActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtGenderActionPerformed
-
-    private void txtDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDateActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtDateActionPerformed
 
     /**
      * @param args the command line arguments
      */
-
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(frmMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(frmMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(frmMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(frmMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                frmRegister1 frm = new frmRegister1();
-                frm.setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> boxGender;
     private javax.swing.JButton jButton1;
-    private com.toedter.calendar.JCalendar jCalendar1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -350,8 +298,7 @@ public class frmRegister1 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField txtDate;
+    private com.toedter.calendar.JDateChooser jdate;
     private javax.swing.JTextField txtFullname;
-    private javax.swing.JTextField txtGender;
     // End of variables declaration//GEN-END:variables
 }
