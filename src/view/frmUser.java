@@ -24,87 +24,171 @@ public class frmUser extends javax.swing.JInternalFrame {
     public frmUser() {
         initComponents();
         getUser();
-        
+
         boxRoles();
     }
 
     public void getUser() {
         try {
-            Connect cn = new Connect();
+            Connect cn = new Connect(); // Kết nối tới cơ sở dữ liệu
             DefaultTableModel dt = (DefaultTableModel) tbUser.getModel();
             dt.setRowCount(0); // Làm sạch bảng trước khi thêm dữ liệu mới
 
-            // Câu lệnh truy vấn để lấy dữ liệu từ Users
-            String query = "SELECT users.userId, users.username,users.password, users.email, "
-                    + "users.phone, users.empId,users.roleId"
-                    + "FROM users ";
+            // Câu lệnh truy vấn để lấy dữ liệu từ bảng Users
+            String query = "SELECT users.userId, users.username, users.password, users.email, "
+                    + "users.phone, users.empId, users.roleId "
+                    + "FROM users";
 
-            try (ResultSet resultSet = cn.selectQuery(query, new Object[0])) {
+            try (ResultSet resultSet = cn.selectQuery(query, new Object[0])) { // Thực thi truy vấn
                 while (resultSet.next()) {
-                    Vector v = new Vector();
-                    v.add(resultSet.getInt("userId")); 
-                    v.add(resultSet.getString("username")); 
-                    v.add(resultSet.getString("password"));
-                    v.add(resultSet.getString("email")); 
-                    v.add(resultSet.getBigDecimal("phone")); 
-                    v.add(resultSet.getString("empId")); 
-                    v.add(resultSet.getString("roleId")); 
-                    dt.addRow(v); 
+                    Vector<Object> v = new Vector<>();
+                    v.add(resultSet.getInt("userId")); // Lấy giá trị userId
+                    v.add(resultSet.getString("username")); // Lấy giá trị username
+                    v.add(resultSet.getString("password")); // Lấy giá trị password
+                    v.add(resultSet.getString("email")); // Lấy giá trị email
+
+                    // Kiểm tra kiểu dữ liệu của phone. Nếu là chuỗi thì dùng getString
+                    v.add(resultSet.getString("phone"));
+
+                    v.add(resultSet.getString("empId")); // Lấy giá trị empId
+                    v.add(resultSet.getString("roleId")); // Lấy giá trị roleId
+                    dt.addRow(v); // Thêm dữ liệu vào bảng
                 }
                 System.out.println("Lấy dữ liệu thành công từ Users");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Lỗi khi xử lý dữ liệu: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                cn.close(); // Đóng kết nối
             }
-
-            cn.close(); // Đóng kết nối
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lỗi khi lấy dữ liệu: " + e.getMessage());
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
     public void addUser() {
-//        String userid = txtId.getText().trim();
         String name = txtName.getText().trim();
         String password = txtPassword.getText().trim();
         String email = txtEmail.getText().trim();
         String phone = txtPhone.getText().trim();
         String role = boxRole.getSelectedItem().toString().split(" - ")[0];
         String employees = txtEployeesID.getText().trim();
-        
 
-//        // Kiểm tra nếu mã phòng hợp lệ
-//        if (userid.isEmpty() || !userid.matches("\\d+")) {
-//            JOptionPane.showMessageDialog(null, "Vui lòng nhập mã user hợp lệ!");
-//            return;  // Dừng thực hiện nếu có lỗi
-//        }
-
-        // Kiểm tra nếu mã chức vụ hoặc tên chức vụ đã tồn tại
-        if (isUserExist(name)) {
-            JOptionPane.showMessageDialog(null, "Tên user đã tồn tại!");
-            return;  // Dừng thực hiện nếu đã tồn tại
+        // Kiểm tra dữ liệu nhập vào
+        if (name.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty() || employees.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
+            return;
         }
 
-        Object[] argv = new Object[7];
-//        argv[0] = Integer.parseInt(userid);
-        argv[1] = name;
-        argv[2] = password;
-        argv[3] = email;
-        argv[4] = phone;
+        // Kiểm tra tên user đã tồn tại
+        if (isUserExist(name)) {
+            JOptionPane.showMessageDialog(null, "Tên user đã tồn tại!");
+            return;
+        }
+
+        Object[] argv = new Object[6];
+        argv[0] = name;
+        argv[1] = password;
+        argv[2] = email;
+        argv[3] = phone;
+        argv[4] = employees;
         argv[5] = role;
-        argv[6] = employees;
 
         try {
             Connect cn = new Connect();
-            int rs = cn.executeQuery("INSERT INTO users (username, password, email, phone, empId, roleId) VALUES (?, ?, ?, ?, ?, ?)", argv);
+            String query = "INSERT INTO users (username, password, email, phone, empId, roleId) VALUES (?, ?, ?, ?, ?, ?)";
+            int rs = cn.executeQuery(query, argv);
             if (rs > 0) {
-                JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu ");
-
-                // Xóa dữ liệu trong các trường nhập liệu sau khi thêm thành công
+                JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu!");
                 clearText();
+            } else {
+                JOptionPane.showMessageDialog(null, "Không có dữ liệu nào được thêm!");
             }
-
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu"+  e);
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "Thêm mới thất bại! Lỗi: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void updateUser() {
+        String id = txtId.getText().trim(); // Lấy ID từ trường nhập
+        String name = txtName.getText().trim();
+        String password = txtPassword.getText().trim();
+        String email = txtEmail.getText().trim();
+        String phone = txtPhone.getText().trim();
+        String role = boxRole.getSelectedItem().toString().split(" - ")[0];
+        String employees = txtEployeesID.getText().trim();
+
+        // Kiểm tra dữ liệu nhập vào
+        if (id.isEmpty() || !id.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập ID hợp lệ!");
+            return;
+        }
+        if (name.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty() || employees.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
+            return;
+        }
+
+        Object[] argv = new Object[6];
+        argv[0] = name;
+        argv[1] = password;
+        argv[2] = email;
+        argv[3] = phone;
+        argv[4] = employees;
+        argv[5] = role;
+
+        try {
+            Connect cn = new Connect();
+            String query = "UPDATE users SET username = ?, password = ?, email = ?, phone = ?, empId = ?, roleId = ? WHERE userId = ?";
+            Object[] finalArgs = new Object[argv.length + 1];
+            System.arraycopy(argv, 0, finalArgs, 0, argv.length);
+            finalArgs[finalArgs.length - 1] = Integer.parseInt(id); // Thêm ID làm tham số cuối
+
+            int rs = cn.executeQuery(query, finalArgs);
+            if (rs > 0) {
+                JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
+                clearText(); // Xóa dữ liệu nhập liệu
+            } else {
+                JOptionPane.showMessageDialog(null, "Không có dữ liệu nào được cập nhật!");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Cập nhật thất bại! Lỗi: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteUser() {
+        String id = txtId.getText().trim(); // Lấy ID từ trường nhập
+
+        // Kiểm tra dữ liệu nhập vào
+        if (id.isEmpty() || !id.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập ID hợp lệ!");
+            return;
+        }
+
+        // Hiển thị hộp thoại xác nhận trước khi xóa
+        int confirm = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn xóa người dùng với ID " + id + "?",
+                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // Dừng nếu người dùng chọn "Không"
+        }
+
+        try {
+            Connect cn = new Connect();
+            String query = "DELETE FROM users WHERE userId = ?";
+            Object[] argv = {Integer.parseInt(id)};
+            int rs = cn.executeQuery(query, argv);
+
+            if (rs > 0) {
+                JOptionPane.showMessageDialog(null, "Xóa thành công!");
+                clearText(); // Xóa dữ liệu nhập liệu
+            } else {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng với ID đã nhập!");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Xóa thất bại! Lỗi: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -134,9 +218,9 @@ public class frmUser extends javax.swing.JInternalFrame {
 
         return false;  // Nếu không tìm thấy, thì không tồn tại
     }
-    
+
     //lay box role
-    private void boxRoles() { 
+    private void boxRoles() {
         get.loadRoleToComboBox(boxRole);
     }
 
@@ -202,10 +286,25 @@ public class frmUser extends javax.swing.JInternalFrame {
         });
 
         jButton2.setText("Update");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Delete");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Exit");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jLabel7.setText("Role:");
 
@@ -300,9 +399,14 @@ public class frmUser extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "User ID:", "Username", "Password", "Email", "Phone", "Role", "Employees"
+                "User ID", "Username", "Password", "Email", "Phone", "Role", "Employees"
             }
         ));
+        tbUser.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbUserMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbUser);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -331,7 +435,54 @@ public class frmUser extends javax.swing.JInternalFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         addUser();
+        getUser();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        updateUser();
+        getUser();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void tbUserMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbUserMouseClicked
+        int i = tbUser.getSelectedRow();
+        if (i >= 0 && tbUser.getValueAt(i, 0) != null) {
+            String id = tbUser.getValueAt(i, 0).toString();
+            String name = tbUser.getValueAt(i, 1).toString();
+            String pass = tbUser.getValueAt(i, 2).toString();
+            String email = tbUser.getValueAt(i, 3).toString();
+            String phone = tbUser.getValueAt(i, 4).toString();
+            String role = tbUser.getValueAt(i, 5).toString();
+            String employees = tbUser.getValueAt(i, 6).toString();
+
+            // Cập nhật các trường trong UI
+            txtId.setText(id);
+            txtName.setText(name);
+            txtPassword.setText(pass);
+            txtEmail.setText(email);
+            txtPhone.setText(phone);
+            boxRole.setSelectedItem(role);
+            txtEployeesID.setText(employees);
+            for (int j = 0; j < boxRole.getItemCount(); j++) {
+                String item = boxRole.getItemAt(j).toString();
+                if (item.startsWith(role + " - ")) { // Kiểm tra vai trò bắt đầu bằng role
+                    boxRole.setSelectedIndex(j); // Chọn mục tương ứng
+                    break;
+                }
+            }
+        }
+    }//GEN-LAST:event_tbUserMouseClicked
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        deleteUser();
+        getUser();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
