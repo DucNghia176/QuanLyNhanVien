@@ -1,6 +1,7 @@
 package view;
 
 import dto.Connect;
+import entity.UserCache;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,21 @@ public class frmRegister1 extends javax.swing.JFrame {
     private String email;
     private String phone;
 
+    public frmRegister1() {
+        initComponents();
+
+        // Lấy thông tin người dùng đã lưu tạm thời từ UserCache
+        String username = UserCache.getUsername();
+        String password = UserCache.getPassword();
+        String email = UserCache.getEmail();
+        String phone = UserCache.getPhone();
+
+        // Hiển thị thông tin người dùng vào các trường trong form nếu có
+//        txtUsername.setText(username != null ? username : "");
+//        txtEmail.setText(email != null ? email : "");
+//        txtPhone.setText(phone != null ? phone : "");
+    }
+
     // Constructor với tham số
     public frmRegister1(String name, String password, String email, String phone) {
         this.name = name;
@@ -28,7 +44,7 @@ public class frmRegister1 extends javax.swing.JFrame {
         this.phone = phone;
         initComponents();
         pack();
-        setSize(600, 400);
+        setSize(412, 433);
         setLocationRelativeTo(null);
     }
 
@@ -36,7 +52,7 @@ public class frmRegister1 extends javax.swing.JFrame {
     private boolean saveDataToDatabase(String sql, Object[] params) {
         try {
             Connect cn = new Connect();
-            int result = cn.executeQuery(sql, params);
+            int result = cn.executeUpdateQuery(sql, params);
             return result > 0;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lỗi cơ sở dữ liệu: " + e.getMessage());
@@ -46,11 +62,11 @@ public class frmRegister1 extends javax.swing.JFrame {
         return false;
     }
 
-    // Phương thức lưu người dùng vào cơ sở dữ liệu
-    public void saveUserToDatabase() {
+    // Phương thức lưu người dùng vào cơ sở dữ liệu với empID
+    public void saveUserToDatabase(int empId) {
         int roleId = 2;
-        Object[] params = new Object[]{name, password, email, phone, roleId};
-        String sql = "INSERT INTO users (username, password, email, phone, roleId) VALUES (?, ?, ?, ?, ?)";
+        Object[] params = new Object[]{name, password, email, phone, roleId, empId}; // Thêm empID vào tham số
+        String sql = "INSERT INTO users (username, password, email, phone, roleId, empId) VALUES (?, ?, ?, ?, ?, ?)";
         if (saveDataToDatabase(sql, params)) {
             JOptionPane.showMessageDialog(null, "Thêm mới thành công!");
         }
@@ -58,13 +74,19 @@ public class frmRegister1 extends javax.swing.JFrame {
 
     // Phương thức tạo và lưu thông tin đăng ký nhân viên
     public boolean createRegister() {
-        String name = txtFullname.getText().trim();
+        String fullname = txtFullname.getText().trim();
         Date dob = jdate.getDate();
         String gender = (String) boxGender.getSelectedItem();
 
         // Kiểm tra dữ liệu nhập vào
-        if (name.isEmpty() || dob == null || gender.isEmpty()) {
+        if (fullname.isEmpty() || dob == null || gender.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+            return false;
+        }
+
+        // Kiểm tra ngày sinh không phải là ngày trong tương lai
+        if (dob.after(new Date())) {
+            JOptionPane.showMessageDialog(this, "Ngày sinh không được trong tương lai!");
             return false;
         }
 
@@ -72,17 +94,35 @@ public class frmRegister1 extends javax.swing.JFrame {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(dob);
 
-        Object[] params = new Object[]{name, formattedDate, gender};
-        String sql = "INSERT INTO employees (name, dob, gender) VALUES (?, ?, ?)";
+        // Lưu nhân viên vào bảng employees
+        try {
+            Connect cn = new Connect();
+            int empId = getLastInsertedEmpIdAndInsert(cn, fullname, formattedDate, gender);
 
-        if (saveDataToDatabase(sql, params)) {
-            JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu: " + name);
-            clearText();
-            return true;
-        } else {
-            JOptionPane.showMessageDialog(null, "Thêm mới thất bại dữ liệu: " + name);
+            if (empId != -1) {
+                saveUserToDatabase(empId); // Lưu người dùng với empId
+                JOptionPane.showMessageDialog(this, "Đăng ký thành công: " + fullname);
+                clearText();
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(this, "Không thể lấy empId sau khi thêm nhân viên!");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi cơ sở dữ liệu: " + e.getMessage());
         }
+
         return false;
+    }
+    // Phương thức lấy empID của nhân viên vừa được thêm vào bảng employees
+
+    private int getLastInsertedEmpIdAndInsert(Connect cn, String fullname, String formattedDate, String gender) throws SQLException {
+        String sql = "INSERT INTO employees (name, dob, gender) OUTPUT INSERTED.empId VALUES (?, ?, ?)";
+        try (ResultSet rs = cn.selectQuery(sql, new Object[]{fullname, formattedDate, gender})) {
+            if (rs != null && rs.next()) {
+                return rs.getInt(1); // Lấy empId trả về
+            }
+        }
+        return -1; // Không tìm thấy empId
     }
 
     public void clearText() {
@@ -96,10 +136,6 @@ public class frmRegister1 extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -109,6 +145,7 @@ public class frmRegister1 extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jdate = new com.toedter.calendar.JDateChooser();
         boxGender = new javax.swing.JComboBox<>();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sign Up");
@@ -117,53 +154,11 @@ public class frmRegister1 extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));
         jPanel1.setLayout(null);
 
-        jPanel2.setBackground(new java.awt.Color(0, 102, 102));
-
-        jLabel2.setFont(new java.awt.Font("Showcard Gothic", 0, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Company Name");
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel3.setText("copyright © company name All rights reserved");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(137, 137, 137)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(72, 72, 72)
-                        .addComponent(jLabel3))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(104, 104, 104)
-                        .addComponent(jLabel2)))
-                .addContainerGap(52, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(129, 129, 129)
-                .addComponent(jLabel1)
-                .addGap(30, 30, 30)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addGap(64, 64, 64))
-        );
-
-        jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 400, 420);
-
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel4.setBackground(new java.awt.Color(0, 102, 102));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel4.setText("REGISTER");
+        jLabel4.setText("Complete Registration");
 
         jLabel5.setBackground(new java.awt.Color(102, 102, 102));
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -194,33 +189,37 @@ public class frmRegister1 extends javax.swing.JFrame {
         boxGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Nam","Nữ"})
         );
 
+        jButton2.setText("Back");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addGap(43, 43, 43))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(44, 44, 44)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(boxGender, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(148, 148, 148)
-                                .addComponent(jLabel4))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(44, 44, 44)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(boxGender, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel7)
-                                    .addComponent(txtFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7)
+                            .addComponent(txtFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -240,27 +239,26 @@ public class frmRegister1 extends javax.swing.JFrame {
                 .addComponent(jLabel7)
                 .addGap(18, 18, 18)
                 .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(102, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jPanel1.add(jPanel3);
-        jPanel3.setBounds(400, 0, 380, 500);
+        jPanel3.setBounds(0, 0, 380, 410);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 867, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 635, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -268,19 +266,25 @@ public class frmRegister1 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        saveUserToDatabase();
         try {
             boolean success = createRegister();
             if (success) {
                 this.setVisible(false);
-                new frmLogin().setVisible(true);
+                new frmLogin().setVisible(true); // Chuyển sang form đăng nhập
             } else {
-                JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.");
+//                JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.");
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Có lỗi xảy ra: " + ex.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        frmRegister registerForm = new frmRegister();
+        registerForm.setVisible(true);
+        registerForm.setLocationRelativeTo(null);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,15 +292,12 @@ public class frmRegister1 extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxGender;
     private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private com.toedter.calendar.JDateChooser jdate;
     private javax.swing.JTextField txtFullname;

@@ -1,9 +1,11 @@
 package view;
 
 import dto.Connect;
+import entity.UserCache;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import process.check;
 import view.frmLogin;
@@ -12,6 +14,17 @@ public class frmRegister extends javax.swing.JFrame {
 
     public frmRegister() {
         initComponents();
+        
+        // Lấy thông tin từ UserCache và hiển thị vào các trường tương ứng
+        String username = UserCache.getUsername();
+        String email = UserCache.getEmail();
+        String phone = UserCache.getPhone();
+
+        // Hiển thị thông tin đã lưu vào các trường trong form
+        txtUsername.setText(username != null ? username : "");
+        txtEmail.setText(email != null ? email : "");
+        txtPhone.setText(phone != null ? phone : "");
+        
         pack();
         setSize(879, 635);
         setLocationRelativeTo(null);
@@ -65,11 +78,14 @@ public class frmRegister extends javax.swing.JFrame {
             return;  // Dừng thực hiện nếu mật khẩu không khớp
         }
 
+        // Lưu tạm thông tin người dùng
+        UserCache.saveUserInfo(name, String.valueOf(password), email, phone);
+
         // Chuyển sang frmRegister1
         frmRegister1 register1 = new frmRegister1(name, String.valueOf(password), email, phone);
         register1.setVisible(true);
         register1.setLocationRelativeTo(null);
-        this.dispose(); // Đóng frmRegister sau khi chuyển tới frmRegister1
+        this.dispose();
     }
 
     public void clearText() {
