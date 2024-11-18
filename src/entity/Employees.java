@@ -15,8 +15,6 @@ public class Employees {
     private String name;
     private Date dob;
     private String gender;
-    private String email;
-    private String phone;
     private int posId;
     private float sal;
     private int deptId;
@@ -51,22 +49,6 @@ public class Employees {
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public int getPosId() {

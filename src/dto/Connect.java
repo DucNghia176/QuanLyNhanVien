@@ -27,6 +27,10 @@ public class Connect {
             throw new SQLException("Lỗi kết nối đến cơ sở dữ liệu", ex);
         }
     }
+    
+    public Connection getConnection() {
+        return conn;
+    }
 
     public ResultSet selectQuery(String query, Object[] params) throws SQLException {
         // Mở kết nối và chuẩn bị statement
