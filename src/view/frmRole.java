@@ -73,7 +73,7 @@ public class frmRole extends javax.swing.JInternalFrame {
 
         try {
             Connect cn = new Connect();
-            int rs = cn.executeQuery("INSERT INTO roles (roleId, roleName) VALUES (?, ?)", argv);
+            int rs = cn.executeUpdateQuery("INSERT INTO roles (roleId, roleName) VALUES (?, ?)", argv);
             if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu id:" + id);
 
@@ -118,7 +118,7 @@ public class frmRole extends javax.swing.JInternalFrame {
             // 2. Cập nhật thông tin phòng ban trong bảng roles
             String deleteDepartment = "UPDATE roles SET roleName = ? WHERE roleId = ?";
             Object[] roleArgs = new Object[]{roleName, Integer.valueOf(roleId)};
-            int roleResult = cn.executeQuery(deleteDepartment, roleArgs);
+            int roleResult = cn.executeUpdateQuery(deleteDepartment, roleArgs);
 
             if (roleResult > 0) {
                 JOptionPane.showMessageDialog(null, "Cập nhật thông tin phòng ban thành công!");
@@ -174,7 +174,7 @@ public class frmRole extends javax.swing.JInternalFrame {
             // 2. Xóa thông tin phòng ban trong bảng roles
             String deleteDepartment = "DELETE FROM roles WHERE roleId = ?";
             Object[] roleArgs = new Object[]{Integer.valueOf(roleId)};
-            int roleResult = cn.executeQuery(deleteDepartment, roleArgs);
+            int roleResult = cn.executeUpdateQuery(deleteDepartment, roleArgs);
 
             if (roleResult > 0) {
                 JOptionPane.showMessageDialog(null, "Xóa phòng ban thành công!");

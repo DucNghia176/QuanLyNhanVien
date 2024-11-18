@@ -98,7 +98,7 @@ public class frmUser extends javax.swing.JInternalFrame {
         try {
             Connect cn = new Connect();
             String query = "INSERT INTO users (username, password, email, phone, empId, roleId) VALUES (?, ?, ?, ?, ?, ?)";
-            int rs = cn.executeQuery(query, argv);
+            int rs = cn.executeUpdateQuery(query, argv);
             if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu!");
                 clearText();
@@ -145,7 +145,7 @@ public class frmUser extends javax.swing.JInternalFrame {
             System.arraycopy(argv, 0, finalArgs, 0, argv.length);
             finalArgs[finalArgs.length - 1] = Integer.parseInt(id); // Thêm ID làm tham số cuối
 
-            int rs = cn.executeQuery(query, finalArgs);
+            int rs = cn.executeUpdateQuery(query, finalArgs);
             if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
                 clearText(); // Xóa dữ liệu nhập liệu
@@ -178,7 +178,7 @@ public class frmUser extends javax.swing.JInternalFrame {
             Connect cn = new Connect();
             String query = "DELETE FROM users WHERE userId = ?";
             Object[] argv = {Integer.parseInt(id)};
-            int rs = cn.executeQuery(query, argv);
+            int rs = cn.executeUpdateQuery(query, argv);
 
             if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "Xóa thành công!");

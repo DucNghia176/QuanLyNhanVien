@@ -79,7 +79,7 @@ public class frmDepartment extends javax.swing.JInternalFrame {
 
         try {
             Connect cn = new Connect();
-            int rs = cn.executeQuery("INSERT INTO departments (deptId, deptName) VALUES (?, ?)", argv);
+            int rs = cn.executeUpdateQuery("INSERT INTO departments (deptId, deptName) VALUES (?, ?)", argv);
             if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "Thêm mới thành công dữ liệu id:" + id);
 
@@ -130,7 +130,7 @@ public class frmDepartment extends javax.swing.JInternalFrame {
             // 2. Cập nhật thông tin phòng ban trong bảng departments
             String deleteDepartment = "UPDATE departments SET deptName = ? WHERE deptId = ?";
             Object[] departmentArgs = new Object[]{deptName, Integer.valueOf(deptId)};
-            int departmentResult = cn.executeQuery(deleteDepartment, departmentArgs);
+            int departmentResult = cn.executeUpdateQuery(deleteDepartment, departmentArgs);
 
             if (departmentResult > 0) {
                 JOptionPane.showMessageDialog(null, "Cập nhật thông tin phòng ban thành công!");
@@ -186,7 +186,7 @@ public class frmDepartment extends javax.swing.JInternalFrame {
             // 2. Xóa thông tin phòng ban trong bảng departments
             String deleteDepartment = "DELETE FROM departments WHERE deptId = ?";
             Object[] departmentArgs = new Object[]{Integer.valueOf(deptId)};
-            int departmentResult = cn.executeQuery(deleteDepartment, departmentArgs);
+            int departmentResult = cn.executeUpdateQuery(deleteDepartment, departmentArgs);
 
             if (departmentResult > 0) {
                 JOptionPane.showMessageDialog(null, "Xóa phòng ban thành công!");
