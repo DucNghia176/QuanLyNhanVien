@@ -5,6 +5,7 @@
 package view;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,6 +16,69 @@ public class frmMain extends javax.swing.JFrame {
     /**
      * Creates new form Main
      */
+    
+    private int role;
+
+    public frmMain(int role) {
+        initComponents();
+        this.role = role;
+        setLocationRelativeTo(null);
+        setupRoleFeatures(); // Gọi hàm thiết lập quyền
+    }
+
+    private void setupRoleFeatures() {
+        // Quản lý quyền truy cập theo role
+        switch (role) {
+            case 1: // Admin
+                // Hiển thị đầy đủ các tính năng
+                break;
+            case 2: // User
+                // Ẩn các chức năng dành cho admin
+                btUser.setVisible(false);
+                btDerpartment.setVisible(false);
+                break;
+            case 3: // Manager
+                // Ẩn một số tính năng không liên quan
+                btUser.setVisible(false);
+                btDerpartment.setVisible(false);
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "Unknown role. Some features may not work.", "Warning", JOptionPane.WARNING_MESSAGE);
+                break;
+        }
+    }
+
+    //đóng tất cả jfarme
+    private void closeAllInternalFrames() {
+        for (javax.swing.JInternalFrame frame : myDesktop.getAllFrames()) {
+            frame.dispose();
+        }
+    }
+
+    //phóng to
+    private void openInternalFrameFullScreen(javax.swing.JInternalFrame frame) {
+        frame.setSize(myDesktop.getWidth(), myDesktop.getHeight()); // Thiết lập kích thước bằng myDesktop
+        myDesktop.add(frame); // Thêm frame vào JDesktopPane
+        frame.setVisible(true); // Hiển thị frame
+        try {
+            frame.setMaximum(true); // Phóng to toàn màn hình
+        } catch (java.beans.PropertyVetoException ex) {
+            ex.printStackTrace(); // In lỗi nếu có
+        }
+    }
+
+    private void runForm(javax.swing.JInternalFrame form) {
+        closeAllInternalFrames(); // Đóng tất cả các form hiện tại
+        form.setSize(myDesktop.getWidth(), myDesktop.getHeight()); // Thiết lập kích thước toàn màn hình
+        myDesktop.add(form); // Thêm form vào JDesktopPane
+        form.setVisible(true); // Hiển thị form
+        try {
+            form.setMaximum(true); // Phóng to toàn màn hình
+        } catch (java.beans.PropertyVetoException ex) {
+            ex.printStackTrace(); // In lỗi nếu có
+        }
+    }
+
     public frmMain() {
         initComponents();
     }
@@ -121,30 +185,22 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btEmployessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEmployessActionPerformed
         // TODO add your handling code here:
-        frmEmployees frm = new frmEmployees();
-        myDesktop.add(frm);
-        frm.setVisible(true);
+        runForm(new frmEmployees());
     }//GEN-LAST:event_btEmployessActionPerformed
 
     private void btDerpartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDerpartmentActionPerformed
         // TODO add your handling code here:
-        frmDepartment frm = new frmDepartment();
-        myDesktop.add(frm);
-        frm.setVisible(true);
+        runForm(new frmDepartment());
     }//GEN-LAST:event_btDerpartmentActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        frmPosition frm = new frmPosition();
-        myDesktop.add(frm);
-        frm.setVisible(true);
+        runForm(new frmPosition());
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
         // TODO add your handling code here:
-        frmUser frm = new frmUser();
-        myDesktop.add(frm);
-        frm.setVisible(true);
+        runForm(new frmUser());
     }//GEN-LAST:event_btUserActionPerformed
 
     /**

@@ -1,7 +1,9 @@
 
 package quanlynhanvien;
 
+import javax.swing.JFrame;
 import view.frmLogin;
+import view.frmMain;
 
 public class LoginAndSignUp {
 
@@ -12,7 +14,5 @@ public class LoginAndSignUp {
         LoginFrame.setVisible(true);
         LoginFrame.pack();
         LoginFrame.setLocationRelativeTo(null); 
-        
-        
     }
 }
