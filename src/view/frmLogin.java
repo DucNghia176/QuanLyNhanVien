@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class frmLogin extends javax.swing.JFrame {
@@ -17,11 +18,10 @@ public class frmLogin extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
-    private void loginAction() {
+    private int loginAction() {
         String username = txtUsername.getText();
         String password = new String(txtPassword.getPassword());
 
-        // Kiểm tra nếu username hoặc password trống
         if (username.isEmpty() || password.isEmpty()) {
             if (username.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Username is required.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -29,7 +29,7 @@ public class frmLogin extends javax.swing.JFrame {
             if (password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            return;  // Nếu username hoặc password rỗng, dừng lại và không tiếp tục kiểm tra
+            return -1; // Đăng nhập thất bại
         }
 
         Connect connect = null;
@@ -38,43 +38,27 @@ public class frmLogin extends javax.swing.JFrame {
         ResultSet rs = null;
 
         try {
-            // Thiết lập kết nối
             connect = new Connect();
-            conn = (Connection) connect.getConnection(); // Kết nối được thiết lập từ lớp Connect
+            conn = connect.getConnection();
 
-            // Thực hiện truy vấn
             String sql = "SELECT roleId FROM users WHERE username = ? AND password = ?";
-            stmt = conn.prepareStatement(sql);  // Sử dụng conn.prepareStatement
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             stmt.setString(2, password);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
                 int role = rs.getInt("roleId");
-                switch (role) {
-                    case 1:
-                        JOptionPane.showMessageDialog(this, "Welcome Admin!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-                        new frmMain().setVisible(true);
-                        break;
-                    case 2:
-                        JOptionPane.showMessageDialog(this, "Welcome User!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-                        // Chuyển đến giao diện user
-                        break;
-                    case 3:
-                        JOptionPane.showMessageDialog(this, "Welcome Manager!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-                        // Chuyển đến giao diện manager
-                        break;
-                    default:
-                        JOptionPane.showMessageDialog(this, "Unknown role.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                        break;
-                }
+                JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                return role; // Trả về quyền của người dùng
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
+                return -1; // Đăng nhập thất bại
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
+            return -1; // Đăng nhập thất bại
         } finally {
-            // Đảm bảo đóng kết nối và các tài nguyên
             try {
                 if (rs != null) {
                     rs.close();
@@ -280,8 +264,13 @@ public class frmLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        loginAction();
+        int role = loginAction(); // Lấy quyền từ phương thức loginAction
+        if (role != -1) { // Kiểm tra nếu đăng nhập thành công
+            this.dispose(); // Đóng frmLogin
+            frmMain frm = new frmMain(role);
+            frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            frm.setVisible(true);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
