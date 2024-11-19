@@ -16,7 +16,6 @@ public class frmMain extends javax.swing.JFrame {
     /**
      * Creates new form Main
      */
-    
     private int role;
 
     public frmMain(int role) {
@@ -69,14 +68,14 @@ public class frmMain extends javax.swing.JFrame {
 
     private void runForm(javax.swing.JInternalFrame form) {
         closeAllInternalFrames(); // Đóng tất cả các form hiện tại
-        form.setSize(myDesktop.getWidth(), myDesktop.getHeight()); // Thiết lập kích thước toàn màn hình
+//        form.setSize(myDesktop.getWidth(), myDesktop.getHeight()); // Thiết lập kích thước toàn màn hình?
         myDesktop.add(form); // Thêm form vào JDesktopPane
         form.setVisible(true); // Hiển thị form
-        try {
-            form.setMaximum(true); // Phóng to toàn màn hình
-        } catch (java.beans.PropertyVetoException ex) {
-            ex.printStackTrace(); // In lỗi nếu có
-        }
+//        try {
+//            form.setMaximum(true); // Phóng to toàn màn hình
+//        } catch (java.beans.PropertyVetoException ex) {
+//            ex.printStackTrace(); // In lỗi nếu có
+//        }
     }
 
     public frmMain() {
