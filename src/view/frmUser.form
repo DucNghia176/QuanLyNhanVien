@@ -232,6 +232,9 @@
         <Component class="javax.swing.JTextField" name="txtPassword">
         </Component>
         <Component class="javax.swing.JTextField" name="txtId">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtEmail">
           <Events>

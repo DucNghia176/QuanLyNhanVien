@@ -275,6 +275,8 @@ public class frmUser extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Phone:");
 
+        txtId.setEnabled(false);
+
         txtEmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtEmailActionPerformed(evt);

@@ -6,6 +6,7 @@ package view;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import quanlynhanvien.frmRun;
 
 /**
  *
@@ -33,8 +34,7 @@ public class frmMain extends javax.swing.JFrame {
                 break;
             case 2: // User
                 // Ẩn các chức năng dành cho admin
-                btUser.setVisible(false);
-                btDerpartment.setVisible(false);
+                
                 break;
             case 3: // Manager
                 // Ẩn một số tính năng không liên quan
