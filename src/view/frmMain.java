@@ -6,6 +6,7 @@ package view;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import quanlynhanvien.frmRun;
 
 /**
@@ -107,6 +108,7 @@ public class frmMain extends javax.swing.JFrame {
         myDesktop = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(999, 535));
 
         jPanel1.setBackground(new java.awt.Color(82, 83, 81));
 
@@ -236,7 +238,7 @@ public class frmMain extends javax.swing.JFrame {
         myDesktop.setLayout(myDesktopLayout);
         myDesktopLayout.setHorizontalGroup(
             myDesktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
+            .addGap(0, 661, Short.MAX_VALUE)
         );
         myDesktopLayout.setVerticalGroup(
             myDesktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -250,8 +252,7 @@ public class frmMain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(myDesktop)
-                .addContainerGap())
+                .addComponent(myDesktop))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,17 +265,17 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btEmployessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEmployessActionPerformed
         // TODO add your handling code here:
-        runForm(new frmEmployees(),btEmployess);
+        runForm(new frmEmployees(), btEmployess);
     }//GEN-LAST:event_btEmployessActionPerformed
 
     private void btDerpartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDerpartmentActionPerformed
         // TODO add your handling code here:
-        runForm(new frmDepartment(),btDerpartment);
+        runForm(new frmDepartment(), btDerpartment);
     }//GEN-LAST:event_btDerpartmentActionPerformed
 
     private void btPositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPositionActionPerformed
         // TODO add your handling code here:
-        runForm(new frmPosition(),btPosition);
+        runForm(new frmPosition(), btPosition);
     }//GEN-LAST:event_btPositionActionPerformed
 
     private void btHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btHomeActionPerformed
@@ -283,7 +284,14 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
         // TODO add your handling code here:
-        runForm(new frmUser(),btUser);
+        runForm(new frmUser(), btUser);
+        frmUser userForm = new frmUser();
+        SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+            System.out.println("Chiều rộng của frmUser: " + userForm.getWidth());
+            System.out.println("Chiều cao của frmUser: " + userForm.getHeight());
+        }
+    });
     }//GEN-LAST:event_btUserActionPerformed
 
     /**
@@ -320,6 +328,15 @@ public class frmMain extends javax.swing.JFrame {
                 frmMain frm = new frmMain();
                 frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frm.setVisible(true);
+
+                frm.addWindowListener(new java.awt.event.WindowAdapter() {
+                    public void windowOpened(java.awt.event.WindowEvent e) {
+                        // In ra chiều rộng và chiều cao của myDesktop sau khi cửa sổ đã được mở
+                        System.out.println("Chiều rộng của myDesktop: " + frm.myDesktop.getWidth());
+                        System.out.println("Chiều cao của myDesktop: " + frm.myDesktop.getHeight());
+                    }
+                });
+
             }
         });
     }

@@ -280,7 +280,7 @@ public class frmPosition extends javax.swing.JInternalFrame {
 
         jLabel2.setText("Position Name:");
 
-        btAdd.setText("Add");
+        btAdd.setText("+Add");
         btAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btAddActionPerformed(evt);
@@ -415,9 +415,10 @@ public class frmPosition extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btExitActionPerformed
 
     private void btAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddActionPerformed
-        // TODO add your handling code here:
+//         TODO add your handling code here:
         addPosition();
         getPosition();
+    
     }//GEN-LAST:event_btAddActionPerformed
 
     private void btUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUpdateActionPerformed
