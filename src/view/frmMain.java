@@ -285,13 +285,6 @@ public class frmMain extends javax.swing.JFrame {
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
         // TODO add your handling code here:
         runForm(new frmUser(), btUser);
-        frmUser userForm = new frmUser();
-        SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-            System.out.println("Chiều rộng của frmUser: " + userForm.getWidth());
-            System.out.println("Chiều cao của frmUser: " + userForm.getHeight());
-        }
-    });
     }//GEN-LAST:event_btUserActionPerformed
 
     /**
@@ -330,6 +323,7 @@ public class frmMain extends javax.swing.JFrame {
                 frm.setVisible(true);
 
                 frm.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
                     public void windowOpened(java.awt.event.WindowEvent e) {
                         // In ra chiều rộng và chiều cao của myDesktop sau khi cửa sổ đã được mở
                         System.out.println("Chiều rộng của myDesktop: " + frm.myDesktop.getWidth());
