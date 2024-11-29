@@ -55,24 +55,25 @@ public class frmMain extends javax.swing.JFrame {
         }
     }
 
-    //phóng to
-    private void openInternalFrameFullScreen(javax.swing.JInternalFrame frame) {
-        frame.setSize(myDesktop.getWidth(), myDesktop.getHeight()); // Thiết lập kích thước bằng myDesktop
-        myDesktop.add(frame); // Thêm frame vào JDesktopPane
-        frame.setVisible(true); // Hiển thị frame
-        try {
-            frame.setMaximum(true); // Phóng to toàn màn hình
-        } catch (java.beans.PropertyVetoException ex) {
-            ex.printStackTrace(); // In lỗi nếu có
-        }
-    }
-
     private void runForm(javax.swing.JInternalFrame form, javax.swing.JButton button) {
         resetButtonColors();
         button.setBackground(new java.awt.Color(128, 0, 128));
         closeAllInternalFrames(); // Đóng tất cả các form hiện tại
         myDesktop.add(form); // Thêm form vào JDesktopPane
         form.setVisible(true); // Hiển thị form
+
+        form.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+            @Override
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent e) {
+                resetButtonColors();  // Đặt lại màu cho tất cả các nút khi cửa sổ bị đóng
+            }
+        });
+        
+        try {
+            form.setMaximum(true); // Phóng to cửa sổ
+        } catch (java.beans.PropertyVetoException ex) {
+            ex.printStackTrace(); // In lỗi nếu có
+        }
     }
 
     private void resetButtonColors() {
@@ -204,7 +205,7 @@ public class frmMain extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -285,6 +286,18 @@ public class frmMain extends javax.swing.JFrame {
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
         // TODO add your handling code here:
         runForm(new frmUser(), btUser);
+
+        frmUser userForm = new frmUser();
+
+        // Sử dụng invokeLater để đảm bảo form đã được vẽ xong
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Lấy kích thước của frmUser sau khi form đã được hiển thị
+                System.out.println("Chiều rộng của frmUser: " + userForm.getWidth());
+                System.out.println("Chiều cao của frmUser: " + userForm.getHeight());
+            }
+        });
     }//GEN-LAST:event_btUserActionPerformed
 
     /**
@@ -317,6 +330,7 @@ public class frmMain extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 frmMain frm = new frmMain();
                 frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
