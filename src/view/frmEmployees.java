@@ -6,7 +6,6 @@ package view;
 
 import dto.Connect;
 import java.sql.ResultSet;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -42,7 +41,8 @@ public class frmEmployees extends javax.swing.JInternalFrame {
 
             // Câu lệnh truy vấn để lấy dữ liệu từ Employees và Users
             String query = "SELECT employees.empId, employees.name, employees.dob, employees.gender, "
-                    + "employees.sal, positions.posName, departments.deptName, users.email, users.phone "
+                    + "employees.sal, positions.posName, departments.deptName,"
+                    + "users.email, users.phone "
                     + "FROM employees "
                     + "JOIN users ON employees.empId = users.empId "
                     + "JOIN positions ON employees.posId = positions.posId "
@@ -71,59 +71,7 @@ public class frmEmployees extends javax.swing.JInternalFrame {
             System.out.println(e);
         }
     }
-
-    // Hàm thêm thông tin nhân viên vào bảng
-//    private void AddActionPerformed() {
-//        try {
-//            // Lấy dữ liệu từ giao diện
-//            String name = txtName.getText().trim();
-//            // Lấy ngày sinh từ JDateChooser và chuyển đổi thành chuỗi
-//            String dob = new SimpleDateFormat("yyyy-MM-dd").format(txtDate.getDate());
-//            String gender = boxGender.getSelectedItem().toString();
-//            int posId = Integer.parseInt(boxPosition.getSelectedItem().toString().split(" - ")[0].trim());
-//            int deptId = Integer.parseInt(boxDerpartment.getSelectedItem().toString().split(" - ")[0].trim());
-//            String salary = txtSalary.getText().trim();
-//
-//            // Kiểm tra dữ liệu đầu vào
-//            if (name.isEmpty() || dob.isEmpty() || salary.isEmpty()) {
-//                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//                return;
-//            }
-//
-//            // Kiểm tra lương hợp lệ
-//            double salaryValue;
-//            try {
-//                salaryValue = Double.parseDouble(salary);
-//                if (salaryValue <= 0) {
-//                    JOptionPane.showMessageDialog(this, "Lương phải lớn hơn 0!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//                    return;
-//                }
-//            } catch (NumberFormatException e) {
-//                JOptionPane.showMessageDialog(this, "Lương phải là một số hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//
-//            // Kết nối cơ sở dữ liệu và thực hiện truy vấn
-//            Connect cn = new Connect();
-//            String query = "INSERT INTO employees (name, dob, gender, posId, sal, deptId) VALUES (?, ?, ?, ?, ?, ?)";
-//
-//            // Thực hiện truy vấn thêm dữ liệu
-//            int rowsAffected = cn.executeUpdateQuery(query, new Object[]{name, dob, gender, posId, salaryValue, deptId});
-//
-//            if (rowsAffected > 0) {
-//                JOptionPane.showMessageDialog(this, "Thêm nhân viên mới thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//                // Cập nhật lại ComboBox và danh sách nhân viên
-//                getEmployees();  // Lấy lại danh sách nhân viên để hiển thị
-//                clearInputFields();  // Làm sạch các trường nhập liệu
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Không thể thêm nhân viên mới.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            }
-//
-//        } catch (Exception e) {
-//            // Hiển thị thông báo lỗi nếu có ngoại lệ
-//            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    
     // Làm sạch dữ liệu sau khi thêm
     private void clearInputFields() {
         txtName.setText("");

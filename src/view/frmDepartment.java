@@ -25,7 +25,7 @@ public class frmDepartment extends javax.swing.JInternalFrame {
         getDepartment();
 
         //ẩn các trường đi
-        panInput.setVisible(false);
+//        panInput.setVisible(false);
     }
 
     public void getDepartment() {

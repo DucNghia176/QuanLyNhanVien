@@ -22,6 +22,7 @@ public class frmRegister1 extends javax.swing.JFrame {
     private String phone;
 
     public frmRegister1() {
+        setUndecorated(true);
         initComponents();
 
         // Lấy thông tin người dùng đã lưu tạm thời từ UserCache
@@ -30,6 +31,8 @@ public class frmRegister1 extends javax.swing.JFrame {
         String email = UserCache.getEmail();
         String phone = UserCache.getPhone();
 
+        setTitle(config.AppConfig.appTitle);
+        setResizable(false);
         // Hiển thị thông tin người dùng vào các trường trong form nếu có
 //        txtUsername.setText(username != null ? username : "");
 //        txtEmail.setText(email != null ? email : "");

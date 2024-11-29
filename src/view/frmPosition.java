@@ -25,7 +25,7 @@ public class frmPosition extends javax.swing.JInternalFrame {
         getPosition();
 
         //ẩn các trường đi
-        panInput.setVisible(false);
+//        panInput.setVisible(false);
     }
 
     public void getPosition() {

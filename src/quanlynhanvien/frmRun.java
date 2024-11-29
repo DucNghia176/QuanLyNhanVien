@@ -18,6 +18,8 @@ public class frmRun extends javax.swing.JFrame {
      */
     public frmRun() {
         initComponents();
+        setTitle(config.AppConfig.appTitle);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource(config.AppConfig.backgroundImage)));
     }
 
     /**
@@ -29,17 +31,24 @@ public class frmRun extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImages(getIconImages());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 668, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel1)
+                .addGap(0, 1711, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 420, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel1)
+                .addGap(0, 1074, Short.MAX_VALUE))
         );
 
         pack();
@@ -75,6 +84,8 @@ public class frmRun extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                config.AppConfig.appTitle = "Employee Management System";
+                
                 frmRun frm = new frmRun();
                 frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frm.setVisible(true);
@@ -88,5 +99,6 @@ public class frmRun extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }

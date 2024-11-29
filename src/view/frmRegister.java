@@ -13,7 +13,10 @@ import view.frmLogin;
 public class frmRegister extends javax.swing.JFrame {
 
     public frmRegister() {
+        setUndecorated(true);
         initComponents();
+        setTitle(config.AppConfig.appTitle);
+
         
         // Lấy thông tin từ UserCache và hiển thị vào các trường tương ứng
         String username = UserCache.getUsername();
@@ -28,6 +31,7 @@ public class frmRegister extends javax.swing.JFrame {
         pack();
         setSize(879, 635);
         setLocationRelativeTo(null);
+        setResizable(false);
     }
 
     public void createRegister() {
@@ -359,6 +363,7 @@ public class frmRegister extends javax.swing.JFrame {
         frmLogin LoginFrame = new frmLogin();
         LoginFrame.setVisible(true);
         LoginFrame.setLocationRelativeTo(null);
+        
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
