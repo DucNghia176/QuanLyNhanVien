@@ -26,7 +26,25 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
     public frmTimeSheetUser(int empId) {
         this.empId = empId;  // Lưu empId
         initComponents();
-        txtEmp.setText(Integer.toString(empId));  // Hiển thị empId trong text field txtEmp
+        
+        //lay ten 
+        try {
+            Connect cn = new Connect();
+            String query = "SELECT name FROM employees WHERE empId = " + empId;
+
+            try (ResultSet resultSet = cn.selectQuery(query, new Object[0])) {
+                if (resultSet.next()) {
+                    String empName = resultSet.getString("name");
+                    txtEmp.setText(empName);  // Hiển thị tên nhân viên trong txtEmp
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Lỗi khi lấy tên nhân viên: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi khi kết nối cơ sở dữ liệu: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         getTimeSheet();  // Gọi hàm lấy bảng thời gian
     }
@@ -43,13 +61,16 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
             dt.setRowCount(0); // Làm sạch bảng trước khi thêm dữ liệu mới
 
             // Câu lệnh truy vấn để lấy dữ liệu từ bảng timesheet cho empId hiện tại
-            String query = "SELECT tsId, empId, inTime, outTime, workDate FROM timesheet WHERE empId = " + this.empId;
+            String query = "SELECT ts.tsId, e.name AS empName, ts.inTime, ts.outTime, ts.workDate "
+                    + "FROM timesheet ts "
+                    + "JOIN employees e ON ts.empId = e.empId "
+                    + "WHERE ts.empId = " + this.empId;
 
             try (ResultSet resultSet = cn.selectQuery(query, new Object[0])) {
                 while (resultSet.next()) {
                     Vector v = new Vector();
                     v.add(resultSet.getInt("tsId"));
-                    v.add(resultSet.getString("empId"));
+                    v.add(resultSet.getString("empName"));
                     v.add(resultSet.getString("inTime"));
                     v.add(resultSet.getString("outTime"));
                     v.add(resultSet.getString("workDate"));
@@ -232,7 +253,6 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
             // Lấy ngày hiện tại
             String currentDate = java.time.LocalDate.now().toString();
             txtWord.setText(currentDate);
-            
 
             // Lấy empId từ đối tượng frmTimeSheetUser
             String empId = Integer.toString(this.empId);

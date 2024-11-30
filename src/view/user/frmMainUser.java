@@ -45,11 +45,11 @@ public class frmMainUser extends javax.swing.JFrame {
             }
         });
 
-        try {
-            form.setMaximum(true); // Phóng to cửa sổ
-        } catch (java.beans.PropertyVetoException ex) {
-            ex.printStackTrace(); // In lỗi nếu có
-        }
+//        try {
+//            form.setMaximum(true); // Phóng to cửa sổ
+//        } catch (java.beans.PropertyVetoException ex) {
+//            ex.printStackTrace(); // In lỗi nếu có
+//        }
     }
 
     private void closeAllInternalFrames() {
