@@ -21,7 +21,7 @@ public class frmLogin extends javax.swing.JFrame {
         setResizable(false);
     }
 
-    private int loginAction() {
+    private int[] loginAction() {
         String username = txtUsername.getText();
         String password = new String(txtPassword.getPassword());
 
@@ -32,7 +32,7 @@ public class frmLogin extends javax.swing.JFrame {
             if (password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            return -1; // Đăng nhập thất bại
+            return new int[]{-1, -1}; // Đăng nhập thất bại
         }
 
         Connect connect = null;
@@ -44,23 +44,25 @@ public class frmLogin extends javax.swing.JFrame {
             connect = new Connect();
             conn = connect.getConnection();
 
-            String sql = "SELECT roleId FROM users WHERE username = ? AND password = ?";
+            // Sửa lại câu truy vấn để lấy empId thay vì userId
+            String sql = "SELECT empId, roleId FROM users WHERE username = ? AND password = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             stmt.setString(2, password);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                int role = rs.getInt("roleId");
-                JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                return role; // Trả về quyền của người dùng
+                int empId = rs.getInt("empId");  // Lấy empId
+                int role = rs.getInt("roleId");  // Lấy roleId
+                JOptionPane.showMessageDialog(this, "Xin chào, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+                return new int[]{empId, role}; // Trả về empId và roleId
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                return -1; // Đăng nhập thất bại
+                return new int[]{-1, -1}; // Đăng nhập thất bại
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
-            return -1; // Đăng nhập thất bại
+            return new int[]{-1, -1}; // Đăng nhập thất bại
         } finally {
             try {
                 if (rs != null) {
@@ -267,19 +269,27 @@ public class frmLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        int role = loginAction(); // Lấy quyền từ phương thức loginAction
+        int[] loginResult = loginAction(); // Lấy cả empId và role từ phương thức loginAction
+        int empId = loginResult[0];
+        int role = loginResult[1];
+
         if (role != -1) { // Kiểm tra nếu đăng nhập thành công
             this.dispose(); // Đóng frmLogin
-            frmMain frm = new frmMain(role);
-            frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frm.setVisible(true);
+            if (role == 1 || role == 2) {
+                frmMain frm = new frmMain(empId, role); // Truyền empId và role
+                frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                frm.setVisible(true);
+            } else if (role == 3) {
+                frmMainUser frmUser = new frmMainUser(empId, role); // Truyền empId và role
+                frmUser.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                frmUser.setVisible(true);
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

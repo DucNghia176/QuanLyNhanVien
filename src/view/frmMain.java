@@ -18,34 +18,13 @@ public class frmMain extends javax.swing.JFrame {
     /**
      * Creates new form Main
      */
+    private int empId;
     private int role;
 
-    public frmMain(int role) {
-        initComponents();
+    public frmMain(int empId, int role) {
+        this.empId = empId;
         this.role = role;
-        setLocationRelativeTo(null);
-        setupRoleFeatures(); // Gọi hàm thiết lập quyền
-    }
-
-    private void setupRoleFeatures() {
-        // Quản lý quyền truy cập theo role
-        switch (role) {
-            case 1: // Admin
-                // Hiển thị đầy đủ các tính năng
-                break;
-            case 2: // User
-                // Ẩn các chức năng dành cho admin
-
-                break;
-            case 3: // Manager
-                // Ẩn một số tính năng không liên quan
-                btHome.setVisible(false);
-                btDerpartment.setVisible(false);
-                break;
-            default:
-                JOptionPane.showMessageDialog(this, "Unknown role. Some features may not work.", "Warning", JOptionPane.WARNING_MESSAGE);
-                break;
-        }
+        initComponents();
     }
 
     //đóng tất cả jfarme
@@ -83,6 +62,7 @@ public class frmMain extends javax.swing.JFrame {
         btUser.setBackground(new java.awt.Color(76, 175, 80));
         btDerpartment.setBackground(new java.awt.Color(76, 175, 80));
         btPosition.setBackground(new java.awt.Color(76, 175, 80));
+        btTimeSheet.setBackground(new java.awt.Color(76, 175, 80));
     }
 
     public frmMain() {
@@ -106,6 +86,7 @@ public class frmMain extends javax.swing.JFrame {
         btUser = new javax.swing.JButton();
         btDerpartment = new javax.swing.JButton();
         btPosition = new javax.swing.JButton();
+        btTimeSheet = new javax.swing.JButton();
         myDesktop = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -201,6 +182,18 @@ public class frmMain extends javax.swing.JFrame {
             }
         });
 
+        btTimeSheet.setBackground(new java.awt.Color(76, 175, 80));
+        btTimeSheet.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btTimeSheet.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/pos.png"))); // NOI18N
+        btTimeSheet.setText("Time Sheet Management ");
+        btTimeSheet.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        btTimeSheet.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btTimeSheet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btTimeSheetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -212,7 +205,8 @@ public class frmMain extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(btDerpartment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btUser, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btUser, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btTimeSheet, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(btHome, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btEmployess, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -232,7 +226,9 @@ public class frmMain extends javax.swing.JFrame {
                 .addComponent(btDerpartment, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(btPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(98, 98, 98))
+                .addGap(20, 20, 20)
+                .addComponent(btTimeSheet, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout myDesktopLayout = new javax.swing.GroupLayout(myDesktop);
@@ -300,6 +296,11 @@ public class frmMain extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_btUserActionPerformed
 
+    private void btTimeSheetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTimeSheetActionPerformed
+        // TODO add your handling code here:
+        runForm(new frmTimeSheet(), btTimeSheet);
+    }//GEN-LAST:event_btTimeSheetActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -354,6 +355,7 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JButton btEmployess;
     private javax.swing.JButton btHome;
     private javax.swing.JButton btPosition;
+    private javax.swing.JButton btTimeSheet;
     private javax.swing.JButton btUser;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
