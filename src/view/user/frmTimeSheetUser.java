@@ -27,6 +27,7 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
         this.empId = empId;  // Lưu empId
         initComponents();
         txtEmp.setText(Integer.toString(empId));  // Hiển thị empId trong text field txtEmp
+
         getTimeSheet();  // Gọi hàm lấy bảng thời gian
     }
 
@@ -67,49 +68,6 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
         }
     }
 
-    private void btInActionPerformed(java.awt.event.ActionEvent evt) {
-        try {
-            // Lấy thời gian hiện tại
-            java.time.LocalDateTime now = java.time.LocalDateTime.now();
-            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedNow = now.format(formatter);
-
-            // Gán giá trị thời gian hiện tại vào txtIn
-            txtIn.setText(formattedNow);
-
-            // Lấy empId từ đối tượng frmTimeSheetUser
-            String empId = Integer.toString(this.empId);
-
-            // Kiểm tra các trường nhập liệu
-            if (empId.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Mã nhân viên không được để trống!");
-                return;
-            }
-
-            // Chuẩn bị truy vấn và tham số
-            String query = "INSERT INTO timesheet (empId, inTime, workDate) VALUES (?, ?, ?)";
-            Object[] params = {
-                empId, // Mã nhân viên (empId)
-                formattedNow, // Thời gian vào (inTime)
-                java.time.LocalDate.now().toString() // Ngày làm việc (workDate)
-            };
-
-            // Kết nối cơ sở dữ liệu và thực thi truy vấn
-            Connect cn = new Connect(); // Đảm bảo class Connect được triển khai để hỗ trợ executeUpdateQuery
-            int result = cn.executeUpdateQuery(query, params);
-
-            if (result > 0) {
-                JOptionPane.showMessageDialog(this, "Chấm công thành công!");
-                getTimeSheet(); // Gọi hàm load lại dữ liệu bảng nếu cần
-            } else {
-                JOptionPane.showMessageDialog(this, "Chấm công thất bại!");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     public void clearText() {
         txtId.setText("");
         txtEmp.setText("");
@@ -140,8 +98,12 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
         txtIn = new javax.swing.JTextField();
         txtOut = new javax.swing.JTextField();
         txtWord = new javax.swing.JTextField();
-        btIn1 = new javax.swing.JButton();
-        btOut = new javax.swing.JButton();
+        btTimeSheet = new javax.swing.JButton();
+
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
 
         tbTime.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -168,14 +130,16 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Employees");
 
-        btIn1.setText("jButton1");
-        btIn1.addActionListener(new java.awt.event.ActionListener() {
+        txtId.setEnabled(false);
+
+        txtEmp.setEnabled(false);
+
+        btTimeSheet.setText("TimeSheet");
+        btTimeSheet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btIn1ActionPerformed(evt);
+                btTimeSheetActionPerformed(evt);
             }
         });
-
-        btOut.setText("jButton1");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -196,48 +160,48 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtIn)
                             .addComponent(txtOut))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btIn1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtWord))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(22, 22, 22)
-                                .addComponent(txtEmp, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(149, 149, 149))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btOut)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel4)
+                            .addGap(18, 18, 18)
+                            .addComponent(txtWord))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel5)
+                            .addGap(22, 22, 22)
+                            .addComponent(txtEmp, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btTimeSheet))
+                .addGap(149, 149, 149))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel5)
-                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEmp, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(27, 27, 27)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel4)
-                    .addComponent(txtIn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtWord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btIn1))
-                .addGap(28, 28, 28)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtIn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtWord, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btOut))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtOut, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btTimeSheet, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(90, Short.MAX_VALUE))
         );
+
+        txtId.getAccessibleContext().setAccessibleName("");
+        txtEmp.getAccessibleContext().setAccessibleName("");
+        txtIn.getAccessibleContext().setAccessibleName("");
+        txtOut.getAccessibleContext().setAccessibleName("");
+        txtWord.getAccessibleContext().setAccessibleName("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -258,16 +222,17 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btIn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btIn1ActionPerformed
-        // TODO add your handling code here:
+    private void btTimeSheetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTimeSheetActionPerformed
         try {
-            // Lấy thời gian hiện tại
-            java.time.LocalDateTime now = java.time.LocalDateTime.now();
-            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedNow = now.format(formatter);
+            // Lấy giờ hiện tại
+            java.time.LocalTime now = java.time.LocalTime.now();  // Chỉ lấy giờ hiện tại
+            java.time.format.DateTimeFormatter formatterTime = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss");
+            String formattedTime = now.format(formatterTime);  // Lấy giờ hiện tại dạng HH:mm:ss
 
-            // Gán giá trị thời gian hiện tại vào txtIn
-            txtIn.setText(formattedNow);
+            // Lấy ngày hiện tại
+            String currentDate = java.time.LocalDate.now().toString();
+            txtWord.setText(currentDate);
+            
 
             // Lấy empId từ đối tượng frmTimeSheetUser
             String empId = Integer.toString(this.empId);
@@ -278,34 +243,77 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
                 return;
             }
 
-            // Chuẩn bị truy vấn và tham số
-            String query = "INSERT INTO timesheet (empId, inTime, workDate) VALUES (?, ?, ?)";
-            Object[] params = {
-                empId, // Mã nhân viên (empId)
-                formattedNow, // Thời gian vào (inTime)
-                java.time.LocalDate.now().toString() // Ngày làm việc (workDate)
-            };
+            // Kết nối cơ sở dữ liệu
+            Connect cn = new Connect();
 
-            // Kết nối cơ sở dữ liệu và thực thi truy vấn
-            Connect cn = new Connect(); // Đảm bảo class Connect được triển khai để hỗ trợ executeUpdateQuery
-            int result = cn.executeUpdateQuery(query, params);
+            // Kiểm tra xem đã có bản ghi timesheet cho nhân viên này trong ngày hiện tại chưa
+            String checkQuery = "SELECT tsId, inTime, outTime, workDate FROM timesheet WHERE empId = ? AND workDate = ?";
+            Object[] checkParams = {empId, currentDate};
 
-            if (result > 0) {
-                JOptionPane.showMessageDialog(this, "Chấm công thành công!");
-                getTimeSheet(); // Gọi hàm load lại dữ liệu bảng nếu cần
-            } else {
-                JOptionPane.showMessageDialog(this, "Chấm công thất bại!");
+            try (ResultSet rs = cn.selectQuery(checkQuery, checkParams)) {
+                if (rs.next()) {
+                    // Đã tồn tại bản ghi timesheet trong ngày
+                    int tsId = rs.getInt("tsId");
+                    String inTime = rs.getString("inTime");
+                    String outTime = rs.getString("outTime");
+                    String workDate = rs.getString("workDate");
+
+                    // Kiểm tra số lần chấm công
+                    if (inTime != null && !inTime.isEmpty() && outTime != null && !outTime.isEmpty()) {
+                        // Cả inTime và outTime đều đã được ghi
+                        JOptionPane.showMessageDialog(this, "Bạn đã chấm công đủ 2 lần trong ngày hôm nay!");
+                        return;
+                    }
+
+                    if (inTime == null || inTime.isEmpty()) {
+                        // Lưu thời gian vào (inTime) nếu chưa có
+                        String updateQuery = "UPDATE timesheet SET inTime = ?, workDate = ? WHERE tsId = ?";
+                        Object[] updateParams = {formattedTime, currentDate, tsId};
+                        int result = cn.executeUpdateQuery(updateQuery, updateParams);
+
+                        if (result > 0) {
+                            JOptionPane.showMessageDialog(this, "Đã lưu thời gian vào (inTime)!");
+                            txtIn.setText(formattedTime); // Hiển thị thời gian vào
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Lỗi khi lưu thời gian vào (inTime)!");
+                        }
+                    } else if (outTime == null || outTime.isEmpty()) {
+                        // Lưu thời gian ra (outTime) nếu đã có thời gian vào
+                        String updateQuery = "UPDATE timesheet SET outTime = ?, workDate = ? WHERE tsId = ?";
+                        Object[] updateParams = {formattedTime, currentDate, tsId};
+                        int result = cn.executeUpdateQuery(updateQuery, updateParams);
+
+                        if (result > 0) {
+                            JOptionPane.showMessageDialog(this, "Đã lưu thời gian ra (outTime)!");
+                            txtOut.setText(formattedTime); // Hiển thị thời gian ra
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Lỗi khi lưu thời gian ra (outTime)!");
+                        }
+                    }
+                } else {
+                    // Không có bản ghi timesheet trong ngày -> Tạo mới
+                    String insertQuery = "INSERT INTO timesheet (empId, inTime, outTime, workDate) VALUES (?, ?, ?, ?)";
+                    Object[] insertParams = {empId, formattedTime, null, currentDate};
+                    int result = cn.executeUpdateQuery(insertQuery, insertParams);
+
+                    if (result > 0) {
+                        JOptionPane.showMessageDialog(this, "Đã tạo mới bản ghi chấm công với thời gian vào (inTime)!");
+                        txtIn.setText(formattedTime); // Hiển thị thời gian vào
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Lỗi khi tạo mới bản ghi chấm công!");
+                    }
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
             e.printStackTrace();
         }
-    }//GEN-LAST:event_btIn1ActionPerformed
+        getTimeSheet();
+    }//GEN-LAST:event_btTimeSheetActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btIn1;
-    private javax.swing.JButton btOut;
+    private javax.swing.JButton btTimeSheet;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

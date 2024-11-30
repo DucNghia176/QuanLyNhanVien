@@ -277,11 +277,11 @@ public class frmLogin extends javax.swing.JFrame {
 
         if (role != -1) { // Kiểm tra nếu đăng nhập thành công
             this.dispose(); // Đóng frmLogin
-            if (role == 1 || role == 2) {
+            if (role == 1 || role == 3) {
                 frmMain frm = new frmMain(empId, role); // Truyền empId và role
                 frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frm.setVisible(true);
-            } else if (role == 3) {
+            } else if (role == 2) {
                 frmMainUser frmUser = new frmMainUser(empId, role); // Truyền empId và role
                 frmUser.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frmUser.setVisible(true);

@@ -239,7 +239,7 @@ public class frmMainUser extends javax.swing.JFrame {
 
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
         // TODO add your handling code here:
-        runForm(new frmUser(), btUser);
+        runForm(new frmUserU(empId), btUser);
     }//GEN-LAST:event_btUserActionPerformed
 
     private void btTimeSheetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTimeSheetActionPerformed
