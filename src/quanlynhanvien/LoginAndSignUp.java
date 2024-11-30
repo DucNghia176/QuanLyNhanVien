@@ -3,7 +3,7 @@ package quanlynhanvien;
 
 import javax.swing.JFrame;
 import view.frmLogin;
-import view.frmMain;
+import view.admin.frmMain;
 
 public class LoginAndSignUp {
 

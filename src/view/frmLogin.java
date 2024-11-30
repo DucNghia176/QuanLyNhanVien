@@ -1,5 +1,7 @@
 package view;
 
+import view.admin.frmMain;
+import view.user.frmMainUser;
 import java.sql.Connection;
 import dto.Connect;
 import java.io.IOException;
