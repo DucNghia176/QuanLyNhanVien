@@ -87,6 +87,8 @@ public class frmMain extends javax.swing.JFrame {
         btDerpartment = new javax.swing.JButton();
         btPosition = new javax.swing.JButton();
         btTimeSheet = new javax.swing.JButton();
+        btTraining = new javax.swing.JButton();
+        btFeedback = new javax.swing.JButton();
         myDesktop = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -193,23 +195,50 @@ public class frmMain extends javax.swing.JFrame {
             }
         });
 
+        btTraining.setBackground(new java.awt.Color(76, 175, 80));
+        btTraining.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btTraining.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/train.png"))); // NOI18N
+        btTraining.setText("Training Management ");
+        btTraining.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        btTraining.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btTraining.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btTrainingActionPerformed(evt);
+            }
+        });
+
+        btFeedback.setBackground(new java.awt.Color(76, 175, 80));
+        btFeedback.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btFeedback.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/feedback.png"))); // NOI18N
+        btFeedback.setText("Feedback");
+        btFeedback.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        btFeedback.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btFeedback.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFeedbackActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btDerpartment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btUser, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btTimeSheet, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btHome, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btEmployess, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btFeedback, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btDerpartment, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btUser, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btTimeSheet, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btTraining, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btHome, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btEmployess, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -227,6 +256,10 @@ public class frmMain extends javax.swing.JFrame {
                 .addComponent(btPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(btTimeSheet, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(btTraining, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(btFeedback, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -234,11 +267,11 @@ public class frmMain extends javax.swing.JFrame {
         myDesktop.setLayout(myDesktopLayout);
         myDesktopLayout.setHorizontalGroup(
             myDesktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 661, Short.MAX_VALUE)
+            .addGap(0, 531, Short.MAX_VALUE)
         );
         myDesktopLayout.setVerticalGroup(
             myDesktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 683, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -248,12 +281,13 @@ public class frmMain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(myDesktop))
+                .addComponent(myDesktop)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(myDesktop)
+            .addComponent(myDesktop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -281,24 +315,22 @@ public class frmMain extends javax.swing.JFrame {
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
         // TODO add your handling code here:
         runForm(new frmUser(), btUser);
-
-        frmUser userForm = new frmUser();
-
-        // Sử dụng invokeLater để đảm bảo form đã được vẽ xong
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Lấy kích thước của frmUser sau khi form đã được hiển thị
-                System.out.println("Chiều rộng của frmUser: " + userForm.getWidth());
-                System.out.println("Chiều cao của frmUser: " + userForm.getHeight());
-            }
-        });
     }//GEN-LAST:event_btUserActionPerformed
 
     private void btTimeSheetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTimeSheetActionPerformed
         // TODO add your handling code here:
         runForm(new frmTimeSheet(), btTimeSheet);
     }//GEN-LAST:event_btTimeSheetActionPerformed
+
+    private void btTrainingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTrainingActionPerformed
+        // TODO add your handling code here:
+        runForm(new frmTraining(), btTraining);
+    }//GEN-LAST:event_btTrainingActionPerformed
+
+    private void btFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFeedbackActionPerformed
+        // TODO add your handling code here:
+        runForm(new frmEmpTraining(), btFeedback);
+    }//GEN-LAST:event_btFeedbackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -335,16 +367,6 @@ public class frmMain extends javax.swing.JFrame {
                 frmMain frm = new frmMain();
                 frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frm.setVisible(true);
-
-                frm.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowOpened(java.awt.event.WindowEvent e) {
-                        // In ra chiều rộng và chiều cao của myDesktop sau khi cửa sổ đã được mở
-                        System.out.println("Chiều rộng của myDesktop: " + frm.myDesktop.getWidth());
-                        System.out.println("Chiều cao của myDesktop: " + frm.myDesktop.getHeight());
-                    }
-                });
-
             }
         });
     }
@@ -352,9 +374,11 @@ public class frmMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDerpartment;
     private javax.swing.JButton btEmployess;
+    private javax.swing.JButton btFeedback;
     private javax.swing.JButton btHome;
     private javax.swing.JButton btPosition;
     private javax.swing.JButton btTimeSheet;
+    private javax.swing.JButton btTraining;
     private javax.swing.JButton btUser;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
