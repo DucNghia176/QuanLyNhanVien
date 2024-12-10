@@ -743,86 +743,71 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
     private void tbEmployeesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbEmployeesMouseClicked
         int i = tbEmployees.getSelectedRow();
 
-        // Kiểm tra nếu hàng được chọn và cột đầu tiên không phải null
         if (i >= 0 && tbEmployees.getValueAt(i, 0) != null) {
-            // Lấy thông tin từ bảng (tbEmployees) vào các biến
             String id = tbEmployees.getValueAt(i, 0).toString();
             String name = tbEmployees.getValueAt(i, 1).toString();
-            String dob = tbEmployees.getValueAt(i, 2).toString();
-            String gender = tbEmployees.getValueAt(i, 3).toString();
+            String dob = tbEmployees.getValueAt(i, 2) != null ? tbEmployees.getValueAt(i, 2).toString() : "";
+            String gender = tbEmployees.getValueAt(i, 3) != null ? tbEmployees.getValueAt(i, 3).toString() : "";
             String email = tbEmployees.getValueAt(i, 4) != null ? tbEmployees.getValueAt(i, 4).toString() : "";
             String phone = tbEmployees.getValueAt(i, 5) != null ? tbEmployees.getValueAt(i, 5).toString() : "";
             String position = tbEmployees.getValueAt(i, 6) != null ? tbEmployees.getValueAt(i, 6).toString() : "";
             String department = tbEmployees.getValueAt(i, 7) != null ? tbEmployees.getValueAt(i, 7).toString() : "";
             String salary = tbEmployees.getValueAt(i, 8) != null ? tbEmployees.getValueAt(i, 8).toString() : "";
 
-            // Cập nhật các trường nhập liệu
-            txtId.setText(id);            // txtId là JTextField cho mã nhân viên
-            txtName.setText(name);        // txtName là JTextField cho tên nhân viên
+            txtId.setText(id);
+            txtName.setText(name);
 
-            // Cập nhật JDateChooser cho ngày sinh (dob)
             try {
-                if (dob != null && !dob.isEmpty()) {
+                if (!dob.isEmpty()) {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date date = sdf.parse(dob);  // Chuyển String thành Date
-                    txtDate.setDate(date);        // Đặt ngày cho JDateChooser
+                    Date date = sdf.parse(dob);
+                    txtDate.setDate(date);
                 } else {
-                    txtDate.setDate(null);  // Nếu dob là null hoặc rỗng, đặt giá trị null
+                    txtDate.setDate(null);
                 }
             } catch (ParseException e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ: " + dob);
             }
 
-            // Giới tính
-            boxGender.setSelectedItem(gender); // boxGender là JComboBox cho giới tính
-            txtEmail.setText(email);      // txtEmail là JTextField cho email (hiển thị chuỗi rỗng nếu email null)
-            txtPhone.setText(phone);      // txtPhone là JTextField cho số điện thoại (hiển thị chuỗi rỗng nếu phone null)
+            boxGender.setSelectedItem(gender);
+            txtEmail.setText(email);
+            txtPhone.setText(phone);
 
-            // Tải lại dữ liệu ComboBox chức vụ và phòng ban từ cơ sở dữ liệu nếu cần
-            // Chỉ tải lại khi ComboBox chưa có dữ liệu
-            if (boxPosition.getItemCount() == 0 || boxDerpartment.getItemCount() == 0) {
-                loadComboBoxData();  // Tải lại dữ liệu chức vụ và phòng ban từ cơ sở dữ liệu
+            if (boxPosition.getItemCount() == 0) {
+                loadComboBoxData();
             }
 
-            // Cập nhật ComboBox cho chức vụ (Position)
-            boolean foundPosition = false;
-            for (int j = 0; j < boxPosition.getItemCount(); j++) {
-                String item = boxPosition.getItemAt(j).toString();
-                // So sánh chính xác mã chức vụ và tên chức vụ
-                if (item.contains(position)) {  // Kiểm tra nếu item có chứa "position"
-                    boxPosition.setSelectedIndex(j);   // Chọn mục trong ComboBox
-                    foundPosition = true;
-                    break;
+            if (!position.isEmpty()) {
+                boolean foundPosition = false;
+                for (int j = 0; j < boxPosition.getItemCount(); j++) {
+                    if (boxPosition.getItemAt(j).toString().contains(position)) {
+                        boxPosition.setSelectedIndex(j);
+                        foundPosition = true;
+                        break;
+                    }
+                }
+                if (!foundPosition) {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy chức vụ: " + position);
                 }
             }
 
-            // Nếu không tìm thấy chức vụ, báo lỗi
-            if (!foundPosition) {
-                System.out.println("Không tìm thấy chức vụ: " + position);
-            }
-
-            // Cập nhật ComboBox cho phòng ban (Department)
-            boolean foundDepartment = false;
-            for (int j = 0; j < boxDerpartment.getItemCount(); j++) {
-                String item = boxDerpartment.getItemAt(j).toString();
-                // So sánh chính xác mã phòng ban và tên phòng ban
-                if (item.contains(department)) {  // Kiểm tra nếu item có chứa "department"
-                    boxDerpartment.setSelectedIndex(j);   // Chọn mục trong ComboBox
-                    foundDepartment = true;
-                    break;
+            if (!department.isEmpty()) {
+                boolean foundDepartment = false;
+                for (int j = 0; j < boxDerpartment.getItemCount(); j++) {
+                    if (boxDerpartment.getItemAt(j).toString().contains(department)) {
+                        boxDerpartment.setSelectedIndex(j);
+                        foundDepartment = true;
+                        break;
+                    }
+                }
+                if (!foundDepartment) {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy phòng ban: " + department);
                 }
             }
 
-            // Nếu không tìm thấy phòng ban, báo lỗi
-            if (!foundDepartment) {
-                System.out.println("Không tìm thấy phòng ban: " + department);
-            }
+            txtSalary.setText(salary);
+            panInput.setVisible(true);
 
-            // Hiển thị mức lương vào trường tương ứng
-            txtSalary.setText(salary);  // txtSalary là JTextField cho lương
-
-            // Hiển thị panel nhập liệu nếu cần (chẳng hạn như một form)
-            panInput.setVisible(true);  // panInput là JPanel hiển thị các trường nhập liệu
         }
     }//GEN-LAST:event_tbEmployeesMouseClicked
 
