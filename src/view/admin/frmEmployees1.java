@@ -8,6 +8,7 @@ import dto.Connect;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -20,16 +21,12 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import process.get;
 
-/**
- *
- * @author Asus
- */
-public class frmEmployees extends javax.swing.JInternalFrame {
+public class frmEmployees1 extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form Employees
      */
-    public frmEmployees() {
+    public frmEmployees1() {
         initComponents();
         loadComboBoxData();
         getEmployees();
@@ -468,7 +465,7 @@ public class frmEmployees extends javax.swing.JInternalFrame {
         btUpdate = new javax.swing.JButton();
         btDelete = new javax.swing.JButton();
         btExit = new javax.swing.JButton();
-        Refet = new javax.swing.JButton();
+        btRefresh = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -491,7 +488,7 @@ public class frmEmployees extends javax.swing.JInternalFrame {
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btSearch)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(277, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -565,6 +562,41 @@ public class frmEmployees extends javax.swing.JInternalFrame {
 
         txtDate.setDateFormatString("dd/MM/yyyy");
 
+        btAdd.setText("Add");
+        btAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddActionPerformed(evt);
+            }
+        });
+
+        btUpdate.setText("Update");
+        btUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btUpdateActionPerformed(evt);
+            }
+        });
+
+        btDelete.setText("Delete");
+        btDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btDeleteActionPerformed(evt);
+            }
+        });
+
+        btExit.setText("Exit");
+        btExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btExitActionPerformed(evt);
+            }
+        });
+
+        btRefresh.setText("Refresh");
+        btRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRefreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panInputLayout = new javax.swing.GroupLayout(panInput);
         panInput.setLayout(panInputLayout);
         panInputLayout.setHorizontalGroup(
@@ -580,31 +612,38 @@ public class frmEmployees extends javax.swing.JInternalFrame {
                     .addGroup(panInputLayout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(94, 94, 94)))
-                .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-                    .addComponent(txtName)
-                    .addComponent(txtDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panInputLayout.createSequentialGroup()
-                        .addGap(85, 85, 85)
+                        .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                            .addComponent(txtName)
+                            .addComponent(txtDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 71, Short.MAX_VALUE)
                         .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel5)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panInputLayout.createSequentialGroup()
-                        .addGap(100, 100, 100)
-                        .addComponent(jLabel6)))
-                .addGap(18, 18, 18)
-                .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-                    .addComponent(txtPhone)
-                    .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addGap(27, 27, 27))
+                    .addGroup(panInputLayout.createSequentialGroup()
+                        .addComponent(btAdd)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btUpdate)
+                        .addGap(88, 88, 88)))
                 .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panInputLayout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(34, 34, 34)
-                        .addComponent(boxPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                            .addComponent(txtPhone)
+                            .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 100, Short.MAX_VALUE))
                     .addGroup(panInputLayout.createSequentialGroup()
+                        .addComponent(btDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btExit)
+                        .addGap(6, 6, 6)))
+                .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panInputLayout.createSequentialGroup()
+                        .addGap(9, 9, 9)
                         .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panInputLayout.createSequentialGroup()
                                 .addComponent(jLabel8)
@@ -614,7 +653,13 @@ public class frmEmployees extends javax.swing.JInternalFrame {
                                 .addGap(44, 44, 44)))
                         .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(boxDerpartment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSalary, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtSalary, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panInputLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addGap(34, 34, 34)
+                        .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btRefresh)
+                            .addComponent(boxPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(100, 100, 100))
         );
         panInputLayout.setVerticalGroup(
@@ -656,43 +701,15 @@ public class frmEmployees extends javax.swing.JInternalFrame {
                                 .addComponent(jLabel3)
                                 .addComponent(jLabel6)
                                 .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addGap(18, 38, Short.MAX_VALUE)
+                .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btExit)
+                    .addComponent(btRefresh)
+                    .addComponent(btDelete)
+                    .addComponent(btUpdate)
+                    .addComponent(btAdd))
+                .addContainerGap())
         );
-
-        btAdd.setText("Add");
-        btAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAddActionPerformed(evt);
-            }
-        });
-
-        btUpdate.setText("Update");
-        btUpdate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btUpdateActionPerformed(evt);
-            }
-        });
-
-        btDelete.setText("Delete");
-        btDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btDeleteActionPerformed(evt);
-            }
-        });
-
-        btExit.setText("Exit");
-        btExit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btExitActionPerformed(evt);
-            }
-        });
-
-        Refet.setText("Refresh");
-        Refet.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RefetActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -700,17 +717,6 @@ public class frmEmployees extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jScrollPane1)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(btAdd)
-                .addGap(81, 81, 81)
-                .addComponent(btUpdate)
-                .addGap(88, 88, 88)
-                .addComponent(btDelete)
-                .addGap(103, 103, 103)
-                .addComponent(btExit)
-                .addGap(58, 58, 58)
-                .addComponent(Refet)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -723,17 +729,7 @@ public class frmEmployees extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btAdd)
-                        .addComponent(btUpdate))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btDelete)
-                        .addComponent(btExit)
-                        .addComponent(Refet)))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addComponent(panInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -741,17 +737,8 @@ public class frmEmployees extends javax.swing.JInternalFrame {
 
     private void btSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSearchActionPerformed
         // TODO add your handling code here:
+        searchEmployees();
     }//GEN-LAST:event_btSearchActionPerformed
-
-    private void btExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExitActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_btExitActionPerformed
-
-    private void btAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddActionPerformed
-        addEmployee();
-        getEmployees();
-    }//GEN-LAST:event_btAddActionPerformed
 
     private void tbEmployeesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbEmployeesMouseClicked
         int i = tbEmployees.getSelectedRow();
@@ -765,9 +752,9 @@ public class frmEmployees extends javax.swing.JInternalFrame {
             String gender = tbEmployees.getValueAt(i, 3).toString();
             String email = tbEmployees.getValueAt(i, 4) != null ? tbEmployees.getValueAt(i, 4).toString() : "";
             String phone = tbEmployees.getValueAt(i, 5) != null ? tbEmployees.getValueAt(i, 5).toString() : "";
-            String position = tbEmployees.getValueAt(i, 6).toString();
-            String department = tbEmployees.getValueAt(i, 7).toString();
-            String salary = tbEmployees.getValueAt(i, 8).toString();
+            String position = tbEmployees.getValueAt(i, 6) != null ? tbEmployees.getValueAt(i, 6).toString() : "";
+            String department = tbEmployees.getValueAt(i, 7) != null ? tbEmployees.getValueAt(i, 7).toString() : "";
+            String salary = tbEmployees.getValueAt(i, 8) != null ? tbEmployees.getValueAt(i, 8).toString() : "";
 
             // Cập nhật các trường nhập liệu
             txtId.setText(id);            // txtId là JTextField cho mã nhân viên
@@ -839,10 +826,21 @@ public class frmEmployees extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_tbEmployeesMouseClicked
 
-    private void RefetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefetActionPerformed
-        // TODO add your handling code here:
+    private void btRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRefreshActionPerformed
         refreshEmployees();
-    }//GEN-LAST:event_RefetActionPerformed
+    }//GEN-LAST:event_btRefreshActionPerformed
+
+    private void btExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExitActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_btExitActionPerformed
+
+    private void btAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddActionPerformed
+        // TODO add your handling code here:
+        // AddActionPerformed();
+        addEmployee();
+        getEmployees();
+    }//GEN-LAST:event_btAddActionPerformed
 
     private void btUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUpdateActionPerformed
         // TODO add your handling code here:
@@ -856,13 +854,13 @@ public class frmEmployees extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Refet;
     private javax.swing.JComboBox<String> boxDerpartment;
     private javax.swing.JComboBox<String> boxGender;
     private javax.swing.JComboBox<String> boxPosition;
     private javax.swing.JButton btAdd;
     private javax.swing.JButton btDelete;
     private javax.swing.JButton btExit;
+    private javax.swing.JButton btRefresh;
     private javax.swing.JButton btSearch;
     private javax.swing.JButton btUpdate;
     private javax.swing.JLabel jLabel1;

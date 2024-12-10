@@ -295,7 +295,7 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btEmployessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEmployessActionPerformed
         // TODO add your handling code here:
-        runForm(new frmEmployees(), btEmployess);
+        runForm(new frmEmployees1(), btEmployess);
     }//GEN-LAST:event_btEmployessActionPerformed
 
     private void btDerpartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDerpartmentActionPerformed
