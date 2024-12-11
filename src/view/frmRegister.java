@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import process.PasswordUtils;
 import process.check;
 import view.frmLogin;
 
@@ -82,15 +83,19 @@ public class frmRegister extends javax.swing.JFrame {
             return;  // Dừng thực hiện nếu mật khẩu không khớp
         }
 
+        // Mã hóa mật khẩu
+        String hashedPassword = PasswordUtils.hashPassword(String.valueOf(password));
+
         // Lưu tạm thông tin người dùng
-        UserCache.saveUserInfo(name, String.valueOf(password), email, phone);
+        UserCache.saveUserInfo(name, hashedPassword, email, phone);
 
         // Chuyển sang frmRegister1
-        frmRegister1 register1 = new frmRegister1(name, String.valueOf(password), email, phone);
+        frmRegister1 register1 = new frmRegister1(name, hashedPassword, email, phone);
         register1.setVisible(true);
         register1.setLocationRelativeTo(null);
         this.dispose();
     }
+
 
     public void clearText() {
         txtUsername.setText("");

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import process.PasswordUtils;
 
 public class frmLogin extends javax.swing.JFrame {
 
@@ -24,66 +25,70 @@ public class frmLogin extends javax.swing.JFrame {
     }
 
     private int[] loginAction() {
-        String username = txtUsername.getText();
-        String password = new String(txtPassword.getPassword());
+    String username = txtUsername.getText();
+    String password = new String(txtPassword.getPassword());
 
-        if (username.isEmpty() || password.isEmpty()) {
-            if (username.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            if (password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+    if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Username is required.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return new int[]{-1, -1}; // Đăng nhập thất bại
+    }
+
+    Connect connect = null;
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+        connect = new Connect();
+        conn = connect.getConnection();
+
+        // Mã hóa mật khẩu
+        String hashedPassword = PasswordUtils.hashPassword(password);
+
+        // Sửa lại câu truy vấn để sử dụng mật khẩu đã mã hóa
+        String sql = "SELECT empId, roleId FROM users WHERE username = ? AND password = ?";
+        stmt = conn.prepareStatement(sql);
+        stmt.setString(1, username);
+        stmt.setString(2, hashedPassword);
+        rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            int empId = rs.getInt("empId");  // Lấy empId
+            int role = rs.getInt("roleId");  // Lấy roleId
+            JOptionPane.showMessageDialog(this, "Xin chào, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            return new int[]{empId, role}; // Trả về empId và roleId
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
             return new int[]{-1, -1}; // Đăng nhập thất bại
         }
-
-        Connect connect = null;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
+        return new int[]{-1, -1}; // Đăng nhập thất bại
+    } finally {
         try {
-            connect = new Connect();
-            conn = connect.getConnection();
-
-            // Sửa lại câu truy vấn để lấy empId thay vì userId
-            String sql = "SELECT empId, roleId FROM users WHERE username = ? AND password = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int empId = rs.getInt("empId");  // Lấy empId
-                int role = rs.getInt("roleId");  // Lấy roleId
-                JOptionPane.showMessageDialog(this, "Xin chào, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-                return new int[]{empId, role}; // Trả về empId và roleId
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                return new int[]{-1, -1}; // Đăng nhập thất bại
+            if (rs != null) {
+                rs.close();
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
-            return new int[]{-1, -1}; // Đăng nhập thất bại
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-                if (connect != null) {
-                    connect.close();
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            if (stmt != null) {
+                stmt.close();
             }
+            if (conn != null) {
+                conn.close();
+            }
+            if (connect != null) {
+                connect.close();
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+}
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
