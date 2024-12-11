@@ -5,90 +5,30 @@ import view.user.frmMainUser;
 import java.sql.Connection;
 import dto.Connect;
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import process.PBKDF2Hashing;
+import process.ForgotPassword;
 
-public class frmLogin extends javax.swing.JFrame {
+public class frmFogot extends javax.swing.JFrame {
 
-    public frmLogin() {
+    public frmFogot() {
         setUndecorated(true);
         initComponents();
         this.setLocationRelativeTo(null);
-    }
-
-    private int[] loginAction() {
-        String username = txtUsername.getText();
-        String password = new String(txtPassword.getPassword());
-
-        if (username.isEmpty() || password.isEmpty()) {
-            if (username.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            if (password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            return new int[]{-1, -1}; // Đăng nhập thất bại
-        }
-
-        Connect connect = null;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            connect = new Connect();
-            conn = connect.getConnection();
-
-            // Lấy thông tin người dùng từ cơ sở dữ liệu
-            String sql = "SELECT empId, roleId, password FROM users WHERE username = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                String storedPassword = rs.getString("password"); // Mật khẩu đã băm từ cơ sở dữ liệu
-
-                // Kiểm tra mật khẩu người dùng nhập vào có khớp với mật khẩu đã lưu không
-                if (PBKDF2Hashing.validatePassword(password, storedPassword)) {
-                    int empId = rs.getInt("empId");
-                    int role = rs.getInt("roleId");
-                    JOptionPane.showMessageDialog(this, "Xin chào, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-                    return new int[]{empId, role}; // Trả về empId và roleId
-                } else {
-                    JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                    return new int[]{-1, -1}; // Đăng nhập thất bại
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                return new int[]{-1, -1}; // Đăng nhập thất bại
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
-            return new int[]{-1, -1}; // Đăng nhập thất bại
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-                if (connect != null) {
-                    connect.close();
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -107,9 +47,7 @@ public class frmLogin extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LOGIN");
@@ -167,11 +105,11 @@ public class frmLogin extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel1.setText("LOGIN");
+        jLabel1.setText("FORGOT PASSWORD");
 
         jLabel2.setBackground(new java.awt.Color(102, 102, 102));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Username");
+        jLabel2.setText("Email:");
 
         txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txtUsername.setForeground(new java.awt.Color(102, 102, 102));
@@ -190,21 +128,13 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("I don't have an account");
-
+        jButton2.setBackground(new java.awt.Color(0, 102, 102));
         jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 51, 51));
-        jButton2.setText("Sign Up");
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setText("Send code");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
-            }
-        });
-
-        jLabel8.setText("You forgot password ???");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
             }
         });
 
@@ -213,34 +143,29 @@ public class frmLogin extends javax.swing.JFrame {
         LeftLayout.setHorizontalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LeftLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(LeftLayout.createSequentialGroup()
-                        .addGap(138, 138, 138)
-                        .addComponent(jLabel1))
-                    .addGroup(LeftLayout.createSequentialGroup()
-                        .addGap(30, 30, 30)
                         .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
                             .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel2)
-                                .addComponent(txtUsername)
+                                .addComponent(txtUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
                                 .addComponent(jLabel3)
-                                .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
-                                .addGroup(LeftLayout.createSequentialGroup()
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel8)))
-                            .addGroup(LeftLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)))))
-                .addContainerGap(27, Short.MAX_VALUE))
+                                .addComponent(txtPassword)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(LeftLayout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2)
+                        .addGap(47, 47, 47))))
         );
         LeftLayout.setVerticalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LeftLayout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(47, 47, 47)
                 .addComponent(jLabel1)
-                .addGap(40, 40, 40)
+                .addGap(44, 44, 44)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -248,19 +173,15 @@ public class frmLogin extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(29, 29, 29)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addGap(33, 33, 33)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jButton2))
-                .addContainerGap(77, Short.MAX_VALUE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(134, Short.MAX_VALUE))
         );
 
         jPanel1.add(Left);
-        Left.setBounds(400, 0, 400, 500);
+        Left.setBounds(400, 0, 445, 500);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -280,39 +201,41 @@ public class frmLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-        frmRegister SignUpFrame = new frmRegister();
-        SignUpFrame.setVisible(true);
-        SignUpFrame.pack();
-        this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        int[] loginResult = loginAction(); // Lấy cả empId và role từ phương thức loginAction
-        int empId = loginResult[0];
-        int role = loginResult[1];
+        String email = txtUsername.getText();
+        char[] pass = txtPassword.getPassword();  // Lấy giá trị mật khẩu từ JPasswordField
+        String passString = new String(pass);  // Chuyển mảng char[] thành String
 
-        if (role != -1) { // Kiểm tra nếu đăng nhập thành công
-            this.dispose(); // Đóng frmLogin
-            if (role == 1 || role == 3) {
-                frmMain frm = new frmMain(empId, role); // Truyền empId và role
-                frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                frm.setVisible(true);
-            } else if (role == 2) {
-                frmMainUser frmUser = new frmMainUser(empId, role); // Truyền empId và role
-                frmUser.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                frmUser.setVisible(true);
-            }
+        boolean result = ForgotPassword.checkPassword(pass, email);
+
+        if (result) {
+            frmPass passForm = new frmPass(email, passString);  // Giả sử bạn có một constructor nhận email
+            passForm.setVisible(true); // Hiển thị form mới
+            this.dispose(); // Đóng form hiện tại (frmFogot)
+        } else {
+            JOptionPane.showMessageDialog(this, "sai mat khau", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        // TODO add your handling code here:
-        frmFogot pass = new frmFogot();
-        pass.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jLabel8MouseClicked
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:String email = txtUsername.getText();
+        String email = txtUsername.getText();
+
+        // Kiểm tra nếu email không rỗng
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Email không thể trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Gọi lớp ForgotPassword để xử lý logic reset mật khẩu
+        boolean result = ForgotPassword.resetPassword(email);
+
+        if (result) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu mới đã được gửi đến email của bạn.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Email không tồn tại hoặc có lỗi trong quá trình gửi email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -359,11 +282,9 @@ public class frmLogin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;

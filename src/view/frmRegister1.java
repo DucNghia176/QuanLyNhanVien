@@ -24,6 +24,7 @@ public class frmRegister1 extends javax.swing.JFrame {
     public frmRegister1() {
         setUndecorated(true);
         initComponents();
+        this.setLocationRelativeTo(null);
 
         // Lấy thông tin người dùng đã lưu tạm thời từ UserCache
         String username = UserCache.getUsername();

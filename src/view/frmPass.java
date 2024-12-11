@@ -12,81 +12,67 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import process.PBKDF2Hashing;
 
-public class frmLogin extends javax.swing.JFrame {
+public class frmPass extends javax.swing.JFrame {
 
-    public frmLogin() {
-        setUndecorated(true);
+    private String email;  // Biến lưu trữ email
+    private String pass;
+
+    // Constructor nhận email
+    public frmPass(String email, String pass) {
         initComponents();
+        this.email = email;  // Lưu email
+        this.pass = pass;
+        
+        // Hiển thị mật khẩu cũ trong txtOld
+        txtOld.setText(pass);
         this.setLocationRelativeTo(null);
     }
 
-    private int[] loginAction() {
-        String username = txtUsername.getText();
-        String password = new String(txtPassword.getPassword());
-
-        if (username.isEmpty() || password.isEmpty()) {
-            if (username.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            if (password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            return new int[]{-1, -1}; // Đăng nhập thất bại
+    private boolean changePassword(String oldPassword, String newPassword, String confirmPassword) {
+        if (!oldPassword.equals(pass)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu cũ không chính xác!");
+            return false;
         }
 
+        if (!newPassword.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu mới và mật khẩu xác nhận không khớp!");
+            return false;
+        }
+
+        // Tạo đối tượng Connect để lấy kết nối
         Connect connect = null;
         Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
         try {
-            connect = new Connect();
-            conn = connect.getConnection();
+            connect = new Connect();  // Tạo đối tượng Connect
+            conn = connect.getConnection();  // Lấy kết nối từ Connect
 
-            // Lấy thông tin người dùng từ cơ sở dữ liệu
-            String sql = "SELECT empId, roleId, password FROM users WHERE username = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            rs = stmt.executeQuery();
+            String sql = "UPDATE users SET password = ? WHERE email = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, newPassword);
+            ps.setString(2, email);
 
-            if (rs.next()) {
-                String storedPassword = rs.getString("password"); // Mật khẩu đã băm từ cơ sở dữ liệu
+            int rowsAffected = ps.executeUpdate();
 
-                // Kiểm tra mật khẩu người dùng nhập vào có khớp với mật khẩu đã lưu không
-                if (PBKDF2Hashing.validatePassword(password, storedPassword)) {
-                    int empId = rs.getInt("empId");
-                    int role = rs.getInt("roleId");
-                    JOptionPane.showMessageDialog(this, "Xin chào, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-                    return new int[]{empId, role}; // Trả về empId và roleId
-                } else {
-                    JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                    return new int[]{-1, -1}; // Đăng nhập thất bại
-                }
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công!");
+                return true;
             } else {
-                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
-                return new int[]{-1, -1}; // Đăng nhập thất bại
+                JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng với email này!");
+                return false;
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
-            return new int[]{-1, -1}; // Đăng nhập thất bại
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu hoặc truy vấn!");
+            Logger.getLogger(frmPass.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         } finally {
+            // Đảm bảo đóng kết nối
             try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
+                if (conn != null && !conn.isClosed()) {
                     conn.close();
                 }
-                if (connect != null) {
-                    connect.close();
-                }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(frmPass.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -103,13 +89,12 @@ public class frmLogin extends javax.swing.JFrame {
         Left = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        txtUsername = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JPasswordField();
+        txtCf = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
+        txtOld = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
+        txtNew = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LOGIN");
@@ -167,18 +152,15 @@ public class frmLogin extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel1.setText("LOGIN");
+        jLabel1.setText("PASSWORD");
 
         jLabel2.setBackground(new java.awt.Color(102, 102, 102));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Username");
-
-        txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtUsername.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setText("New Password");
 
         jLabel3.setBackground(new java.awt.Color(102, 102, 102));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Password");
+        jLabel3.setText("Comfirm Password");
 
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -190,73 +172,50 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("I don't have an account");
-
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 51, 51));
-        jButton2.setText("Sign Up");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jLabel8.setText("You forgot password ???");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
+        jLabel4.setBackground(new java.awt.Color(102, 102, 102));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setText("Old Password");
 
         javax.swing.GroupLayout LeftLayout = new javax.swing.GroupLayout(Left);
         Left.setLayout(LeftLayout);
         LeftLayout.setHorizontalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LeftLayout.createSequentialGroup()
+                .addGap(85, 85, 85)
+                .addComponent(jLabel1)
+                .addContainerGap(114, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(LeftLayout.createSequentialGroup()
-                        .addGap(138, 138, 138)
-                        .addComponent(jLabel1))
-                    .addGroup(LeftLayout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2)
-                                .addComponent(txtUsername)
-                                .addComponent(jLabel3)
-                                .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
-                                .addGroup(LeftLayout.createSequentialGroup()
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel8)))
-                            .addGroup(LeftLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)))))
-                .addContainerGap(27, Short.MAX_VALUE))
+                    .addComponent(txtNew, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtOld, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(txtCf, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18))
         );
         LeftLayout.setVerticalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LeftLayout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(45, 45, 45)
                 .addComponent(jLabel1)
-                .addGap(40, 40, 40)
-                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtOld, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(txtNew, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtCf, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addGap(33, 33, 33)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jButton2))
-                .addContainerGap(77, Short.MAX_VALUE))
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(45, 45, 45))
         );
 
         jPanel1.add(Left);
@@ -280,39 +239,26 @@ public class frmLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-        frmRegister SignUpFrame = new frmRegister();
-        SignUpFrame.setVisible(true);
-        SignUpFrame.pack();
-        this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        int[] loginResult = loginAction(); // Lấy cả empId và role từ phương thức loginAction
-        int empId = loginResult[0];
-        int role = loginResult[1];
+        // Lấy giá trị từ các trường nhập liệu
+        String oldPassword = new String(txtOld.getPassword());  // Mật khẩu cũ
+        String newPassword = new String(txtNew.getPassword());     // Mật khẩu mới
+        String confirmPassword = new String(txtCf.getPassword()); // Xác nhận mật khẩu
 
-        if (role != -1) { // Kiểm tra nếu đăng nhập thành công
-            this.dispose(); // Đóng frmLogin
-            if (role == 1 || role == 3) {
-                frmMain frm = new frmMain(empId, role); // Truyền empId và role
-                frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                frm.setVisible(true);
-            } else if (role == 2) {
-                frmMainUser frmUser = new frmMainUser(empId, role); // Truyền empId và role
-                frmUser.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                frmUser.setVisible(true);
-            }
+        // Gọi hàm changePassword để kiểm tra và thay đổi mật khẩu
+        boolean result = changePassword(oldPassword, newPassword, confirmPassword);
+
+        // Kiểm tra kết quả trả về từ hàm changePassword
+        if (result) {
+            // Nếu thành công, có thể thực hiện các thao tác khác như đóng cửa sổ hiện tại hoặc hiển thị thông báo
+            JOptionPane.showMessageDialog(this, "Mật khẩu đã được thay đổi thành công!");
+            // Nếu cần, bạn có thể chuyển hướng đến trang khác hoặc đóng cửa sổ
+            this.dispose();  // Đóng cửa sổ hiện tại (có thể thay thế theo yêu cầu)
+        } else {
+            // Nếu thất bại, thông báo cho người dùng
+            JOptionPane.showMessageDialog(this, "Đổi mật khẩu thất bại!");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        // TODO add your handling code here:
-        frmFogot pass = new frmFogot();
-        pass.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jLabel8MouseClicked
 
     /**
      * @param args the command line arguments
@@ -355,7 +301,6 @@ public class frmLogin extends javax.swing.JFrame {
     private javax.swing.JPanel Left;
     private javax.swing.JPanel Right;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -363,10 +308,10 @@ public class frmLogin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtUsername;
+    private javax.swing.JPasswordField txtCf;
+    private javax.swing.JPasswordField txtNew;
+    private javax.swing.JPasswordField txtOld;
     // End of variables declaration//GEN-END:variables
 
 }

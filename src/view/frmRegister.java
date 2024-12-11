@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import process.PasswordUtils;
+import process.PBKDF2Hashing;
 import process.check;
 import view.frmLogin;
 
@@ -16,9 +16,9 @@ public class frmRegister extends javax.swing.JFrame {
     public frmRegister() {
         setUndecorated(true);
         initComponents();
+        this.setLocationRelativeTo(null);
         setTitle(config.AppConfig.appTitle);
 
-        
         // Lấy thông tin từ UserCache và hiển thị vào các trường tương ứng
         String username = UserCache.getUsername();
         String email = UserCache.getEmail();
@@ -28,7 +28,7 @@ public class frmRegister extends javax.swing.JFrame {
         txtUsername.setText(username != null ? username : "");
         txtEmail.setText(email != null ? email : "");
         txtPhone.setText(phone != null ? phone : "");
-        
+
         pack();
         setSize(879, 635);
         setLocationRelativeTo(null);
@@ -42,7 +42,7 @@ public class frmRegister extends javax.swing.JFrame {
         String phone = txtPhone.getText().trim();
         char[] confirmPassword = txtComfirm.getPassword();
 
-        // Kiểm tra nếu mã phòng hợp lệ
+        // Kiểm tra nếu các trường không trống
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
             return;  // Dừng thực hiện nếu có lỗi
@@ -60,10 +60,10 @@ public class frmRegister extends javax.swing.JFrame {
             return;  // Dừng thực hiện nếu đã tồn tại
         }
 
-        // Sử dụng hàm kiểm tra độ dài và định dạng số điện thoại
+        // Kiểm tra định dạng số điện thoại
         if (!check.isValidPhoneNumber(phone)) {
             JOptionPane.showMessageDialog(null, "Số điện thoại phải có ít nhất 10 chữ số!");
-            return;  // Dừng thực hiện nếu có lỗi
+            return;
         }
 
         // Kiểm tra định dạng email
@@ -83,19 +83,39 @@ public class frmRegister extends javax.swing.JFrame {
             return;  // Dừng thực hiện nếu mật khẩu không khớp
         }
 
-        // Mã hóa mật khẩu
-        String hashedPassword = PasswordUtils.hashPassword(String.valueOf(password));
+        // Băm mật khẩu
+        String hashedPassword = PBKDF2Hashing.hashPassword(new String(password));
 
-        // Lưu tạm thông tin người dùng
+        // Lưu thông tin người dùng vào cơ sở dữ liệu
+        saveUserToDatabase(name, hashedPassword, email, phone);
+
+        // Lưu thông tin tạm thời
         UserCache.saveUserInfo(name, hashedPassword, email, phone);
 
-        // Chuyển sang frmRegister1
+        // Chuyển đến form đăng ký tiếp theo
         frmRegister1 register1 = new frmRegister1(name, hashedPassword, email, phone);
         register1.setVisible(true);
         register1.setLocationRelativeTo(null);
         this.dispose();
     }
 
+    public void saveUserToDatabase(String username, String password, String email, String phone) {
+        try {
+            Connect cn = new Connect();
+
+            // Chuẩn bị câu truy vấn SQL để chèn thông tin người dùng vào cơ sở dữ liệu
+            String query = "INSERT INTO users (username, password, email, phone) VALUES (?, ?, ?, ?)";
+            Object[] params = {username, password, email, phone};
+
+            // Thực thi câu truy vấn
+            cn.executeUpdateQuery(query, params);
+
+            JOptionPane.showMessageDialog(null, "Đăng ký thành công!");
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
+        }
+    }
 
     public void clearText() {
         txtUsername.setText("");
@@ -368,7 +388,7 @@ public class frmRegister extends javax.swing.JFrame {
         frmLogin LoginFrame = new frmLogin();
         LoginFrame.setVisible(true);
         LoginFrame.setLocationRelativeTo(null);
-        
+
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 

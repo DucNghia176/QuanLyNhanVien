@@ -20,6 +20,7 @@ public class frmRun extends javax.swing.JFrame {
         initComponents();
         setTitle(config.AppConfig.appTitle);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource(config.AppConfig.backgroundImage)));
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     /**
@@ -42,13 +43,13 @@ public class frmRun extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(0, 1711, Short.MAX_VALUE))
+                .addGap(0, 1037, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(0, 1074, Short.MAX_VALUE))
+                .addGap(0, 448, Short.MAX_VALUE))
         );
 
         pack();
@@ -85,11 +86,10 @@ public class frmRun extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 config.AppConfig.appTitle = "Employee Management System";
-                
-                frmRun frm = new frmRun();
-                frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                frm.setVisible(true);
 
+                frmRun frm = new frmRun();
+                frm.setVisible(true);
+                
                 frmLogin LoginFrame = new frmLogin();
                 LoginFrame.setVisible(true);
                 LoginFrame.pack();

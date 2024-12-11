@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import quanlynhanvien.frmRun;
+import view.frmLogin;
 
 /**
  *
@@ -90,6 +91,10 @@ public class frmMain extends javax.swing.JFrame {
         btTraining = new javax.swing.JButton();
         btFeedback = new javax.swing.JButton();
         myDesktop = new javax.swing.JDesktopPane();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -274,6 +279,23 @@ public class frmMain extends javax.swing.JFrame {
             .addGap(0, 683, Short.MAX_VALUE)
         );
 
+        jMenu1.setText("File");
+
+        jMenuItem1.setText("Log Out");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -332,6 +354,15 @@ public class frmMain extends javax.swing.JFrame {
         runForm(new frmEmpTraining(), btFeedback);
     }//GEN-LAST:event_btFeedbackActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        frmRun run = new frmRun();
+        run.setVisible(true);
+        frmLogin login = new frmLogin();
+        login.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -381,6 +412,10 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JButton btTraining;
     private javax.swing.JButton btUser;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JDesktopPane myDesktop;
