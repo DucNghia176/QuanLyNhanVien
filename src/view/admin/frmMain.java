@@ -121,7 +121,6 @@ public class frmMain extends javax.swing.JFrame {
         btPosition = new javax.swing.JButton();
         btTimeSheet = new javax.swing.JButton();
         btTraining = new javax.swing.JButton();
-        btFeedback = new javax.swing.JButton();
         myDesktop = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -246,18 +245,6 @@ public class frmMain extends javax.swing.JFrame {
             }
         });
 
-        btFeedback.setBackground(new java.awt.Color(76, 175, 80));
-        btFeedback.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        btFeedback.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/feedback.png"))); // NOI18N
-        btFeedback.setText("Feedback");
-        btFeedback.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        btFeedback.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btFeedback.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btFeedbackActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -265,18 +252,16 @@ public class frmMain extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btFeedback, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btDerpartment, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btUser, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btTimeSheet, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btTraining, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btHome, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btEmployess, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(btDerpartment, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btUser, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btTimeSheet, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btTraining, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btHome, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btEmployess, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
@@ -297,9 +282,7 @@ public class frmMain extends javax.swing.JFrame {
                 .addComponent(btTimeSheet, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(btTraining, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(btFeedback, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(12, 12, 12))
         );
 
         javax.swing.GroupLayout myDesktopLayout = new javax.swing.GroupLayout(myDesktop);
@@ -400,11 +383,6 @@ public class frmMain extends javax.swing.JFrame {
         runForm(new frmTraining(), btTraining);
     }//GEN-LAST:event_btTrainingActionPerformed
 
-    private void btFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFeedbackActionPerformed
-        // TODO add your handling code here:
-        runForm(new frmEmpTraining(), btFeedback);
-    }//GEN-LAST:event_btFeedbackActionPerformed
-
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
@@ -440,7 +418,7 @@ public class frmMain extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
         closeAllInternalFrames(); // Đóng tất cả các frame nội bộ
-        frmFogot p = new frmFogot(); // Truyền email vào đối tượng frmPass
+        frmFogot p = new frmFogot(this.email); // Truyền email vào đối tượng frmPass
         p.setVisible(true);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
@@ -486,7 +464,6 @@ public class frmMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDerpartment;
     private javax.swing.JButton btEmployess;
-    private javax.swing.JButton btFeedback;
     private javax.swing.JButton btHome;
     private javax.swing.JButton btPosition;
     private javax.swing.JButton btTimeSheet;

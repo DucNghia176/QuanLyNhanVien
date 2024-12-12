@@ -73,7 +73,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="81" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="77" max="32767" attributes="0"/>
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   </Group>
@@ -117,7 +117,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Company Name"/>
+                <Property name="text" type="java.lang.String" value="DEAWOO HOTEL"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel7">
@@ -128,7 +128,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="cc" green="cc" red="cc" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="copyright &#xa9; company name All rights reserved"/>
+                <Property name="text" type="java.lang.String" value="360 Kim M&#xe3;, Ng&#x1ecd;c Kh&#xe1;nh, qu&#x1ead;n Ba &#x110;&#xec;nh, H&#xe0; N&#x1ed9;i"/>
               </Properties>
             </Component>
           </SubComponents>

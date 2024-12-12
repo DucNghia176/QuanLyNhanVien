@@ -155,7 +155,7 @@ public class frmTimeSheetUser extends javax.swing.JInternalFrame {
 
         txtEmp.setEnabled(false);
 
-        btTimeSheet.setText("TimeSheet");
+        btTimeSheet.setText("Attendance");
         btTimeSheet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btTimeSheetActionPerformed(evt);
