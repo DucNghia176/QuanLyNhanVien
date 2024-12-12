@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
+import process.ExportUtils;
 import process.get;
 
 public class frmEmployees1 extends javax.swing.JInternalFrame {
@@ -211,25 +212,36 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
         String phone = txtPhone.getText().trim();
         String position = boxPosition.getSelectedItem().toString().split(" - ")[0]; // Tách ID vị trí (chức vụ)
         String department = boxDerpartment.getSelectedItem().toString().split(" - ")[0]; // Tách ID phòng ban
+        String salaryText = txtSalary.getText().trim(); // Lấy lương từ trường txtSalary
 
         // Kiểm tra dữ liệu nhập vào
         if (empId.isEmpty() || !empId.matches("\\d+")) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập ID nhân viên hợp lệ!");
             return;
         }
-        if (name.isEmpty() || dob.isEmpty() || gender.isEmpty()) {
+        if (name.isEmpty() || dob.isEmpty() || gender.isEmpty() || salaryText.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
             return;
         }
 
+        // Kiểm tra xem lương có hợp lệ không
+        double salary = 0;
+        try {
+            salary = Double.parseDouble(salaryText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Lương không hợp lệ!");
+            return;
+        }
+
         // Mảng đối số để truyền vào câu lệnh SQL cho bảng employees
-        Object[] argvEmployees = new Object[6];  // Không sử dụng phone nếu không có cột này trong bảng employees
+        Object[] argvEmployees = new Object[7];  // Cập nhật số lượng phần tử để bao gồm lương
         argvEmployees[0] = name;
         argvEmployees[1] = dob;
         argvEmployees[2] = gender;
         argvEmployees[3] = position;
         argvEmployees[4] = department;
-        argvEmployees[5] = empId;
+        argvEmployees[5] = salary;  // Cập nhật lương
+        argvEmployees[6] = empId;
 
         // Mảng đối số để truyền vào câu lệnh SQL cho bảng users
         Object[] argvUsers = new Object[3];  // Sử dụng phone trong bảng users
@@ -241,7 +253,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
             Connect cn = new Connect();
 
             // Cập nhật thông tin trong bảng employees
-            String queryEmployees = "UPDATE employees SET name = ?, dob = ?, gender = ?, posId = ?, deptId = ? WHERE empId = ?";
+            String queryEmployees = "UPDATE employees SET name = ?, dob = ?, gender = ?, posId = ?, deptId = ?, sal = ? WHERE empId = ?";
             int rsEmployees = cn.executeUpdateQuery(queryEmployees, argvEmployees);
 
             // Cập nhật thông tin trong bảng users
@@ -466,6 +478,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
         btDelete = new javax.swing.JButton();
         btExit = new javax.swing.JButton();
         btRefresh = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -597,6 +610,13 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton1.setText("Exel");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panInputLayout = new javax.swing.GroupLayout(panInput);
         panInput.setLayout(panInputLayout);
         panInputLayout.setHorizontalGroup(
@@ -618,7 +638,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
                             .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                             .addComponent(txtName)
                             .addComponent(txtDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 71, Short.MAX_VALUE)
+                        .addGap(18, 73, Short.MAX_VALUE)
                         .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(jLabel5)
@@ -635,7 +655,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
                             .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                             .addComponent(txtPhone)
                             .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 100, Short.MAX_VALUE))
+                        .addGap(18, 102, Short.MAX_VALUE))
                     .addGroup(panInputLayout.createSequentialGroup()
                         .addComponent(btDelete)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -658,9 +678,12 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
                         .addComponent(jLabel7)
                         .addGap(34, 34, 34)
                         .addGroup(panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btRefresh)
-                            .addComponent(boxPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(100, 100, 100))
+                            .addComponent(boxPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panInputLayout.createSequentialGroup()
+                                .addComponent(btRefresh)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton1)))))
+                .addGap(24, 24, 24))
         );
         panInputLayout.setVerticalGroup(
             panInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -707,7 +730,8 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
                     .addComponent(btRefresh)
                     .addComponent(btDelete)
                     .addComponent(btUpdate)
-                    .addComponent(btAdd))
+                    .addComponent(btAdd)
+                    .addComponent(jButton1))
                 .addContainerGap())
         );
 
@@ -837,6 +861,11 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
         deleteEmployee();
     }//GEN-LAST:event_btDeleteActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        ExportUtils.exportTableToExcel(tbEmployees);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxDerpartment;
@@ -848,6 +877,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
     private javax.swing.JButton btRefresh;
     private javax.swing.JButton btSearch;
     private javax.swing.JButton btUpdate;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

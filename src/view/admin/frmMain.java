@@ -4,11 +4,16 @@
  */
 package view.admin;
 
+import dto.Connect;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import quanlynhanvien.frmRun;
+import quanlynhanvien.frmRun1;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import view.frmFogot;
 import view.frmLogin;
+import view.frmPass;
 
 /**
  *
@@ -21,6 +26,7 @@ public class frmMain extends javax.swing.JFrame {
      */
     private int empId;
     private int role;
+    private String email;  // Biến lưu trữ emails
 
     public frmMain(int empId, int role) {
         this.empId = empId;
@@ -48,7 +54,7 @@ public class frmMain extends javax.swing.JFrame {
                 resetButtonColors();  // Đặt lại màu cho tất cả các nút khi cửa sổ bị đóng
             }
         });
-        
+
 //        try {
 //            form.setMaximum(true); // Phóng to cửa sổ
 //        } catch (java.beans.PropertyVetoException ex) {
@@ -68,6 +74,32 @@ public class frmMain extends javax.swing.JFrame {
 
     public frmMain() {
         initComponents();
+    }
+
+    public String getEmailByEmpId(int empId) throws SQLException {
+        Connect connect = new Connect();
+        String email = null; // Biến để lưu email
+
+        try {
+            String query = "SELECT u.email FROM Users u JOIN Employees e ON u.empId = e.empId WHERE e.empId = ?";
+            ResultSet rs = connect.selectQuery(query, new Object[]{empId});
+
+            // Kiểm tra kết quả và lấy email
+            if (rs.next()) {
+                email = rs.getString("email"); // Lưu email vào biến email
+                System.out.println("Email: " + email); // In email ra console (nếu cần)
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                connect.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return email; // Trả về email sau khi lấy từ cơ sở dữ liệu
     }
 
     /**
@@ -94,6 +126,8 @@ public class frmMain extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -289,6 +323,22 @@ public class frmMain extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        jMenuItem2.setText("Change password ");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        jMenuItem3.setText("Forgot Password");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
@@ -357,11 +407,41 @@ public class frmMain extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        frmRun run = new frmRun();
+        frmRun1 run = new frmRun1();
         run.setVisible(true);
         frmLogin login = new frmLogin();
         login.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+// Giả sử empId là một thuộc tính của lớp hiện tại
+        int empId = this.empId;
+
+        // Lấy email từ phương thức getEmailByEmpId
+        String email = null;
+        try {
+            email = getEmailByEmpId(empId); // Gọi phương thức để lấy email
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi lấy email: " + e.getMessage());
+        }
+
+        // Kiểm tra email có hợp lệ không
+        if (email != null && !email.isEmpty()) {
+            closeAllInternalFrames(); // Đóng tất cả các frame nội bộ
+            frmPass p = new frmPass(email, this); // Truyền email vào đối tượng frmPass
+            p.setVisible(true); // Hiển thị frame mới
+        } else {
+            // Nếu không lấy được email, hiển thị thông báo lỗi
+            JOptionPane.showMessageDialog(this, "Không thể lấy email.");
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+        closeAllInternalFrames(); // Đóng tất cả các frame nội bộ
+        frmFogot p = new frmFogot(); // Truyền email vào đối tượng frmPass
+        p.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -416,6 +496,8 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JDesktopPane myDesktop;

@@ -12,47 +12,96 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import process.PasswordUtils;
+import quanlynhanvien.frmRun1;
 
 public class frmPass extends javax.swing.JFrame {
 
     private String email;  // Biến lưu trữ email
     private String pass;
 
+    private frmMain mainFrm;
+    private frmMainUser mainUFrm;
+    
+    public frmPass(String email, frmMainUser mainUFrm) {
+        initComponents();
+        this.email = email;
+        this.mainUFrm = mainUFrm;
+        // Set email hoặc các cài đặt khác
+        this.setLocationRelativeTo(null);
+    }
+    
+    public frmPass(String email, frmMain mainFrm) {
+        initComponents();
+        this.email = email;
+        this.mainFrm = mainFrm;
+        this.setLocationRelativeTo(null);
+        // Set email hoặc các cài đặt khác
+    }
     // Constructor nhận email
     public frmPass(String email, String pass) {
         initComponents();
         this.email = email;  // Lưu email
         this.pass = pass;
-        
-        // Hiển thị mật khẩu cũ trong txtOld
+
+//         Hiển thị mật khẩu cũ trong txtOld
         txtOld.setText(pass);
         this.setLocationRelativeTo(null);
     }
 
-    private boolean changePassword(String oldPassword, String newPassword, String confirmPassword) {
-        if (!oldPassword.equals(pass)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu cũ không chính xác!");
-            return false;
-        }
+    public frmPass(String email) {
+        initComponents();
+        this.email = email;
+    }
 
-        if (!newPassword.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu mới và mật khẩu xác nhận không khớp!");
-            return false;
-        }
+    public frmPass() {
+        initComponents();
+        this.setLocationRelativeTo(null);
+    }
 
-        // Tạo đối tượng Connect để lấy kết nối
-        Connect connect = null;
+    private boolean changePassword(String oldPassword, String newPassword, String confirmPassword) throws Exception {
         Connection conn = null;
         try {
-            connect = new Connect();  // Tạo đối tượng Connect
-            conn = connect.getConnection();  // Lấy kết nối từ Connect
+            // Tạo đối tượng Connect để lấy kết nối
+            Connect connect = new Connect();
+            conn = connect.getConnection();
 
-            String sql = "UPDATE users SET password = ? WHERE email = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, newPassword);
-            ps.setString(2, email);
+            // Kiểm tra mật khẩu cũ
+            String sqlSelect = "SELECT password FROM users WHERE email = ?";
+            PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
+            psSelect.setString(1, email);
+            ResultSet rs = psSelect.executeQuery();
 
-            int rowsAffected = ps.executeUpdate();
+            if (rs.next()) {
+                String storedHash = rs.getString("password");
+
+                // Kiểm tra mật khẩu cũ với mật khẩu đã lưu
+                if (!PasswordUtils.verifyPassword(oldPassword.toCharArray(), storedHash)) {
+                    JOptionPane.showMessageDialog(this, "Mật khẩu cũ không chính xác!");
+                    return false;
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng với email này!");
+                return false;
+            }
+
+            // Kiểm tra mật khẩu mới và mật khẩu xác nhận
+            if (!newPassword.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(this, "Mật khẩu mới và mật khẩu xác nhận không khớp!");
+                return false;
+            }
+
+            // Tạo salt và băm mật khẩu mới
+            byte[] salt = PasswordUtils.generateSalt();
+            String hashedPassword = PasswordUtils.hashPassword(newPassword.toCharArray(), salt);
+
+            // Cập nhật mật khẩu mới vào cơ sở dữ liệu
+            String sqlUpdate = "UPDATE users SET password = ? WHERE email = ?";
+            PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+            psUpdate.setString(1, hashedPassword);
+            psUpdate.setString(2, email);
+
+            int rowsAffected = psUpdate.executeUpdate();
 
             if (rowsAffected > 0) {
                 JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công!");
@@ -165,7 +214,7 @@ public class frmPass extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Login");
+        jButton1.setText("Confirm");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -181,27 +230,28 @@ public class frmPass extends javax.swing.JFrame {
         LeftLayout.setHorizontalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LeftLayout.createSequentialGroup()
-                .addGap(85, 85, 85)
-                .addComponent(jLabel1)
-                .addContainerGap(114, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(39, Short.MAX_VALUE)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNew, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtOld, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(txtCf, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+                        .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtNew, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(txtOld, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(txtCf, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(87, 87, 87))))
         );
         LeftLayout.setVerticalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LeftLayout.createSequentialGroup()
-                .addGap(45, 45, 45)
+                .addContainerGap(47, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addGap(46, 46, 46)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtOld, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -246,17 +296,27 @@ public class frmPass extends javax.swing.JFrame {
         String confirmPassword = new String(txtCf.getPassword()); // Xác nhận mật khẩu
 
         // Gọi hàm changePassword để kiểm tra và thay đổi mật khẩu
-        boolean result = changePassword(oldPassword, newPassword, confirmPassword);
-
-        // Kiểm tra kết quả trả về từ hàm changePassword
-        if (result) {
-            // Nếu thành công, có thể thực hiện các thao tác khác như đóng cửa sổ hiện tại hoặc hiển thị thông báo
-            JOptionPane.showMessageDialog(this, "Mật khẩu đã được thay đổi thành công!");
-            // Nếu cần, bạn có thể chuyển hướng đến trang khác hoặc đóng cửa sổ
-            this.dispose();  // Đóng cửa sổ hiện tại (có thể thay thế theo yêu cầu)
-        } else {
-            // Nếu thất bại, thông báo cho người dùng
-            JOptionPane.showMessageDialog(this, "Đổi mật khẩu thất bại!");
+        boolean result;
+        try {
+            result = changePassword(oldPassword, newPassword, confirmPassword);
+            // Kiểm tra kết quả trả về từ hàm changePassword
+            if (result) {
+                if (mainFrm != null) {
+                    mainFrm.dispose();// Đóng frmMain
+                    frmRun1 run= new frmRun1();
+                    run.setVisible(true);
+                }
+                if (mainUFrm != null) {
+                    mainUFrm.dispose();// Đóng frmMain
+                    frmRun1 run= new frmRun1();
+                    run.setVisible(true);
+                }
+                frmLogin lg = new frmLogin();
+                lg.setVisible(true);
+                this.dispose();
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(frmPass.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

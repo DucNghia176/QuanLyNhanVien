@@ -5,24 +5,29 @@
 package quanlynhanvien;
 
 import javax.swing.JFrame;
+import view.frmFogot;
 import view.frmLogin;
 
 /**
  *
  * @author Asus
  */
-public class frmRun extends javax.swing.JFrame {
+public class frmRun1 extends javax.swing.JFrame {
 
     /**
-     * Creates new form frmRun
+     * Creates new form frmRun1
      */
-    public frmRun() {
+    public frmRun1() {
         initComponents();
         setTitle(config.AppConfig.appTitle);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource(config.AppConfig.backgroundImage)));
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
+        // Khởi tạo frmLogin và truyền tham chiếu của frmRun1
+//        frmLogin loginFrame = new frmLogin(this); // Truyền đối tượng frmRun1 vào
+//        loginFrame.setVisible(true);
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,7 +40,6 @@ public class frmRun extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setIconImages(getIconImages());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -43,13 +47,13 @@ public class frmRun extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(0, 1037, Short.MAX_VALUE))
+                .addGap(0, 748, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(0, 448, Short.MAX_VALUE))
+                .addGap(0, 457, Short.MAX_VALUE))
         );
 
         pack();
@@ -72,13 +76,13 @@ public class frmRun extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(frmRun.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmRun1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(frmRun.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmRun1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(frmRun.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmRun1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(frmRun.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmRun1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -87,13 +91,11 @@ public class frmRun extends javax.swing.JFrame {
             public void run() {
                 config.AppConfig.appTitle = "Employee Management System";
 
-                frmRun frm = new frmRun();
+                frmRun1 frm = new frmRun1();
                 frm.setVisible(true);
                 
-                frmLogin LoginFrame = new frmLogin();
-                LoginFrame.setVisible(true);
-                LoginFrame.pack();
-                LoginFrame.setLocationRelativeTo(null);
+                frmLogin lg = new frmLogin(frm);
+                lg.setVisible(true);
             }
         });
     }

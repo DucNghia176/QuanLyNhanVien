@@ -26,6 +26,8 @@ public class ForgotPassword {
     // Kiểm tra email trong cơ sở dữ liệu và gửi mật khẩu mới nếu tồn tại
     public static boolean resetPassword(String email) {
         Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             // Tạo kết nối từ lớp Connect
             Connect connection = new Connect();
@@ -33,18 +35,28 @@ public class ForgotPassword {
 
             // Kiểm tra email trong cơ sở dữ liệu
             String sql = "SELECT email FROM users WHERE email = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             if (rs.next()) {
                 // Nếu email tồn tại, tạo mật khẩu mới và gửi email
                 String newPassword = generateNewPassword();  // Hàm tạo mật khẩu ngẫu nhiên
+                byte[] salt = PasswordUtils.generateSalt();
+                String hashedPassword = null;
+
+                try {
+                    // Bắt ngoại lệ từ phương thức hashPassword
+                    hashedPassword = PasswordUtils.hashPassword(newPassword.toCharArray(), salt);
+                } catch (Exception e) {
+                    e.printStackTrace();  // In lỗi nếu có ngoại lệ
+                    return false;  // Nếu có lỗi, trả về false
+                }
 
                 // Cập nhật mật khẩu mới vào cơ sở dữ liệu
                 String updateSql = "UPDATE users SET password = ? WHERE email = ?";
                 PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-                updateStmt.setString(1, newPassword);
+                updateStmt.setString(1, hashedPassword);
                 updateStmt.setString(2, email);
                 int rowsUpdated = updateStmt.executeUpdate();
 
@@ -55,14 +67,22 @@ public class ForgotPassword {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace();  // Xử lý ngoại lệ SQL
+        } catch (Exception e) {
+            e.printStackTrace();  // Xử lý ngoại lệ khác nếu có
         } finally {
             try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
                 if (conn != null) {
                     conn.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Xử lý ngoại lệ khi đóng kết nối
             }
         }
         return false;  // Email không tồn tại hoặc gặp lỗi
@@ -123,22 +143,24 @@ public class ForgotPassword {
 
             if (rs.next()) {
                 // Mật khẩu đã lưu trong forgotPassword
-                String storedPassword = rs.getString("password");
-
+                String storedHash = rs.getString("password");
                 // So sánh mật khẩu đã nhập với mật khẩu đã lưu
-                return Arrays.equals(enteredPassword, storedPassword.toCharArray());
+                return PasswordUtils.verifyPassword(enteredPassword, storedHash);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace();  // Xử lý ngoại lệ SQL
+        } catch (Exception e) {
+            e.printStackTrace();  // Xử lý ngoại lệ khác nếu có
         } finally {
             try {
                 if (conn != null) {
                     conn.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Xử lý ngoại lệ khi đóng kết nối
             }
         }
         return false;  // Nếu email không tồn tại hoặc gặp lỗi
     }
+
 }

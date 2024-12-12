@@ -4,8 +4,16 @@
  */
 package view.user;
 
-import view.admin.frmEmployees;
+import dto.Connect;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import quanlynhanvien.frmRun1;
+import view.admin.frmEmployees1;
 import view.admin.frmUser;
+import view.frmFogot;
+import view.frmLogin;
+import view.frmPass;
 import view.user.frmTimeSheetUser;
 
 /**
@@ -70,6 +78,32 @@ public class frmMainUser extends javax.swing.JFrame {
         initComponents();
     }
 
+    public String getEmailByEmpId(int empId) throws SQLException {
+        Connect connect = new Connect();
+        String email = null; // Biến để lưu email
+
+        try {
+            String query = "SELECT u.email FROM Users u JOIN Employees e ON u.empId = e.empId WHERE e.empId = ?";
+            ResultSet rs = connect.selectQuery(query, new Object[]{empId});
+
+            // Kiểm tra kết quả và lấy email
+            if (rs.next()) {
+                email = rs.getString("email"); // Lưu email vào biến email
+                System.out.println("Email: " + email); // In email ra console (nếu cần)
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                connect.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return email; // Trả về email sau khi lấy từ cơ sở dữ liệu
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -87,6 +121,12 @@ public class frmMainUser extends javax.swing.JFrame {
         btUser = new javax.swing.JButton();
         btTimeSheet = new javax.swing.JButton();
         myDesktop = new javax.swing.JDesktopPane();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -210,6 +250,39 @@ public class frmMainUser extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        jMenu1.setText("File");
+
+        jMenuItem1.setText("log out");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setText("Changed Password");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        jMenuItem3.setText("Forgot Password");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -234,7 +307,7 @@ public class frmMainUser extends javax.swing.JFrame {
 
     private void btEmployessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEmployessActionPerformed
         // TODO add your handling code here:
-        runForm(new frmEmployees(), btEmployess);
+        runForm(new frmEmployeesUser(empId), btEmployess);
     }//GEN-LAST:event_btEmployessActionPerformed
 
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed
@@ -246,6 +319,46 @@ public class frmMainUser extends javax.swing.JFrame {
         // TODO add your handling code here:
         runForm(new frmTimeSheetUser(empId), btTimeSheet);
     }//GEN-LAST:event_btTimeSheetActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        // TODO add your handling code here:
+        this.dispose();
+        frmRun1 run = new frmRun1();
+        run.setVisible(true);
+        frmLogin login = new frmLogin();
+        login.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        int empId = this.empId;
+
+        // Lấy email từ phương thức getEmailByEmpId
+        String email = null;
+        try {
+            email = getEmailByEmpId(empId); // Gọi phương thức để lấy email
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi lấy email: " + e.getMessage());
+        }
+
+        // Kiểm tra email có hợp lệ không
+        if (email != null && !email.isEmpty()) {
+            closeAllInternalFrames(); // Đóng tất cả các frame nội bộ
+            frmPass p = new frmPass(email, this); // Truyền email vào đối tượng frmPass
+            p.setVisible(true); // Hiển thị frame mới
+        } else {
+            // Nếu không lấy được email, hiển thị thông báo lỗi
+            JOptionPane.showMessageDialog(this, "Không thể lấy email.");
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+        closeAllInternalFrames(); // Đóng tất cả các frame nội bộ
+        frmFogot p = new frmFogot(); // Truyền email vào đối tượng frmPass
+        p.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -289,6 +402,12 @@ public class frmMainUser extends javax.swing.JFrame {
     private javax.swing.JButton btTimeSheet;
     private javax.swing.JButton btUser;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JDesktopPane myDesktop;

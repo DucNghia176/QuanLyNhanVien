@@ -35,6 +35,7 @@ public class frmUserU extends javax.swing.JInternalFrame {
         
         boxRoles();
         boxRole.setSelectedIndex(1);
+        
 
         getUser();
     }

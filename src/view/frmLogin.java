@@ -12,9 +12,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import process.PBKDF2Hashing;
+import process.PasswordUtils;
+import quanlynhanvien.frmRun1;
 
 public class frmLogin extends javax.swing.JFrame {
+
+    private frmRun1 parentFrm;
+
+    public frmLogin(frmRun1 parent) {
+        setUndecorated(true);
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.parentFrm = parent; // Lưu lại tham chiếu của frmRun1
+    }
 
     public frmLogin() {
         setUndecorated(true);
@@ -45,19 +55,19 @@ public class frmLogin extends javax.swing.JFrame {
             connect = new Connect();
             conn = connect.getConnection();
 
-            // Lấy thông tin người dùng từ cơ sở dữ liệu
+            // Sửa lại câu truy vấn để lấy empId, roleId và password đã mã hóa từ CSDL
             String sql = "SELECT empId, roleId, password FROM users WHERE username = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                String storedPassword = rs.getString("password"); // Mật khẩu đã băm từ cơ sở dữ liệu
+                String storedHash = rs.getString("password");  // Lấy mật khẩu mã hóa từ CSDL
+                int empId = rs.getInt("empId");  // Lấy empId
+                int role = rs.getInt("roleId");  // Lấy roleId
 
-                // Kiểm tra mật khẩu người dùng nhập vào có khớp với mật khẩu đã lưu không
-                if (PBKDF2Hashing.validatePassword(password, storedPassword)) {
-                    int empId = rs.getInt("empId");
-                    int role = rs.getInt("roleId");
+                // Kiểm tra mật khẩu đã nhập
+                if (PasswordUtils.verifyPassword(password.toCharArray(), storedHash)) {
                     JOptionPane.showMessageDialog(this, "Xin chào, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                     return new int[]{empId, role}; // Trả về empId và roleId
                 } else {
@@ -70,6 +80,9 @@ public class frmLogin extends javax.swing.JFrame {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
+            return new int[]{-1, -1}; // Đăng nhập thất bại
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Login Error", JOptionPane.ERROR_MESSAGE);
             return new int[]{-1, -1}; // Đăng nhập thất bại
         } finally {
             try {
@@ -294,7 +307,6 @@ public class frmLogin extends javax.swing.JFrame {
         int role = loginResult[1];
 
         if (role != -1) { // Kiểm tra nếu đăng nhập thành công
-            this.dispose(); // Đóng frmLogin
             if (role == 1 || role == 3) {
                 frmMain frm = new frmMain(empId, role); // Truyền empId và role
                 frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -304,6 +316,16 @@ public class frmLogin extends javax.swing.JFrame {
                 frmUser.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frmUser.setVisible(true);
             }
+
+            // Đóng frmRun1 (nếu có)
+            if (parentFrm != null) {
+                parentFrm.dispose();
+            }
+
+            // Đóng frmLogin
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Login failed!");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -312,11 +334,12 @@ public class frmLogin extends javax.swing.JFrame {
         frmFogot pass = new frmFogot();
         pass.setVisible(true);
         this.dispose();
+        
     }//GEN-LAST:event_jLabel8MouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+//    /**
+//     * @param args the command line arguments
+//     */
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

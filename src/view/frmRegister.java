@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import process.PBKDF2Hashing;
+import process.PasswordUtils;
 import process.check;
 import view.frmLogin;
 
@@ -42,25 +42,25 @@ public class frmRegister extends javax.swing.JFrame {
         String phone = txtPhone.getText().trim();
         char[] confirmPassword = txtComfirm.getPassword();
 
-        // Kiểm tra nếu các trường không trống
+        // Kiểm tra nếu các trường cần thiết có dữ liệu
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
-            return;  // Dừng thực hiện nếu có lỗi
+            return;
         }
 
-        // Kiểm tra tên
+        // Kiểm tra tên người dùng
         if (!check.isValidLength(name)) {
             JOptionPane.showMessageDialog(null, "Username có ít nhất 10 kí tự!");
-            return;  // Dừng thực hiện nếu có lỗi
+            return;
         }
 
-        // Kiểm tra tên đã tồn tại
+        // Kiểm tra tên người dùng đã tồn tại
         if (isUserExist(name)) {
             JOptionPane.showMessageDialog(null, "Tên user đã tồn tại!");
-            return;  // Dừng thực hiện nếu đã tồn tại
+            return;
         }
 
-        // Kiểm tra định dạng số điện thoại
+        // Kiểm tra số điện thoại hợp lệ
         if (!check.isValidPhoneNumber(phone)) {
             JOptionPane.showMessageDialog(null, "Số điện thoại phải có ít nhất 10 chữ số!");
             return;
@@ -69,35 +69,34 @@ public class frmRegister extends javax.swing.JFrame {
         // Kiểm tra định dạng email
         if (!check.isValidEmailFormat(email)) {
             JOptionPane.showMessageDialog(null, "Email chưa đúng định dạng!");
-            return;  // Dừng thực hiện nếu có lỗi
-        }
-
-        // Kiểm tra độ dài mật khẩu
-        if (!check.isValidPasswordLength(password)) {
-            JOptionPane.showMessageDialog(null, "Mật khẩu phải có ít nhất 8 ký tự!");
             return;
         }
 
+        // Kiểm tra mật khẩu và xác nhận mật khẩu
         if (!Arrays.equals(password, confirmPassword)) {
             JOptionPane.showMessageDialog(null, "Mật khẩu và xác nhận mật khẩu không khớp!");
-            return;  // Dừng thực hiện nếu mật khẩu không khớp
+            return;
         }
 
-        // Băm mật khẩu
-        String hashedPassword = PBKDF2Hashing.hashPassword(new String(password));
+        // Mã hóa mật khẩu
+        try {
+            byte[] salt = PasswordUtils.generateSalt(); // Tạo salt
+            String hashedPassword = PasswordUtils.hashPassword(password, salt); // Mã hóa mật khẩu
 
-        // Lưu thông tin người dùng vào cơ sở dữ liệu
-        saveUserToDatabase(name, hashedPassword, email, phone);
+            // Lưu thông tin người dùng với mật khẩu đã mã hóa
+            UserCache.saveUserInfo(name, hashedPassword, email, phone);
 
-        // Lưu thông tin tạm thời
-        UserCache.saveUserInfo(name, hashedPassword, email, phone);
-
-        // Chuyển đến form đăng ký tiếp theo
-        frmRegister1 register1 = new frmRegister1(name, hashedPassword, email, phone);
-        register1.setVisible(true);
-        register1.setLocationRelativeTo(null);
-        this.dispose();
+            // Chuyển sang frmRegister1
+            frmRegister1 register1 = new frmRegister1(name, hashedPassword, email, phone);
+            register1.setVisible(true);
+            register1.setLocationRelativeTo(null);
+            this.dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi trong quá trình mã hóa mật khẩu: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 
     public void saveUserToDatabase(String username, String password, String email, String phone) {
         try {
@@ -387,7 +386,7 @@ public class frmRegister extends javax.swing.JFrame {
         // TODO add your handling code here:
         frmLogin LoginFrame = new frmLogin();
         LoginFrame.setVisible(true);
-        LoginFrame.setLocationRelativeTo(null);
+//        LoginFrame.setLocationRelativeTo(null);
 
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
