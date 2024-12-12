@@ -129,7 +129,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
 
             @Override
             protected void done() {
-                JOptionPane.showMessageDialog(null, "Dữ liệu nhân viên đã được tải thành công.");
+//                JOptionPane.showMessageDialog(null, "Dữ liệu nhân viên đã được tải thành công.");
             }
         }.execute(); // Bắt đầu công việc
     }
@@ -152,6 +152,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
         boxPosition.setSelectedIndex(0);
         boxDerpartment.setSelectedIndex(0);
         txtSalary.setText("");
+        txtSearch.setText("");
     }
 
     public void addEmployee() {
@@ -480,9 +481,6 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
         btRefresh = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
-        setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
         setResizable(true);
 
         btSearch.setText("Search");
@@ -837,6 +835,7 @@ public class frmEmployees1 extends javax.swing.JInternalFrame {
 
     private void btRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRefreshActionPerformed
         refreshEmployees();
+        clearFields();
     }//GEN-LAST:event_btRefreshActionPerformed
 
     private void btExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExitActionPerformed

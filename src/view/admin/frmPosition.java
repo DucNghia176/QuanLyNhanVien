@@ -271,9 +271,6 @@ public class frmPosition extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbPosition = new javax.swing.JTable();
 
-        setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
         setResizable(true);
 
         jLabel1.setText("Position ID:");

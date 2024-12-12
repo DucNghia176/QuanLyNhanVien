@@ -243,9 +243,6 @@ public class frmTraining extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTrain = new javax.swing.JTable();
 
-        setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
         setResizable(true);
         setPreferredSize(new java.awt.Dimension(975, 650));
         setVisible(true);

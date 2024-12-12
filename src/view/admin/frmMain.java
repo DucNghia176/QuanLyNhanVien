@@ -382,6 +382,7 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btHomeActionPerformed
         // TODO add your handling code here:
+        closeAllInternalFrames();
     }//GEN-LAST:event_btHomeActionPerformed
 
     private void btUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUserActionPerformed

@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;  // Để thao tác với fil
 // Nếu sử dụng FileOutputStream để lưu file
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import javax.swing.JTable;
 import process.ExportUtils;
 
@@ -85,70 +86,69 @@ public class frmUser extends javax.swing.JInternalFrame {
         }
     }
 
-    public void exportToExcel() {
-        try {
-            Connect cn = new Connect(); // Kết nối đến cơ sở dữ liệu
-            // Câu lệnh truy vấn để lấy dữ liệu từ bảng Users
-            String query = "SELECT u.userId, u.username, u.password, u.email, "
-                    + "u.phone, e.name AS empName, r.roleName "
-                    + "FROM users u "
-                    + "JOIN employees e ON u.empId = e.empId "
-                    + "JOIN roles r ON u.roleId = r.roleId";
-
-            ResultSet resultSet = cn.selectQuery(query, new Object[0]); // Thực thi truy vấn
-
-            // Tạo workbook và sheet cho Excel
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("User Data");
-
-            // Tạo tiêu đề cho bảng
-            Row headerRow = sheet.createRow(0);
-            String[] columns = {"User ID", "Username", "Password", "Email", "Phone", "Employee Name", "Role Name"};
-
-            for (int i = 0; i < columns.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(columns[i]);
-            }
-
-            // Thêm dữ liệu vào sheet
-            int rowNum = 1;
-            while (resultSet.next()) {
-                Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(resultSet.getInt("userId"));
-                row.createCell(1).setCellValue(resultSet.getString("username"));
-                row.createCell(2).setCellValue(resultSet.getString("password"));
-                row.createCell(3).setCellValue(resultSet.getString("email"));
-                row.createCell(4).setCellValue(resultSet.getString("phone"));
-                row.createCell(5).setCellValue(resultSet.getString("empName"));
-                row.createCell(6).setCellValue(resultSet.getString("roleName"));
-            }
-
-            // Mở hộp thoại để chọn vị trí và tên tệp để lưu
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Save Excel File");
-            fileChooser.setSelectedFile(new File("user_data.xlsx"));
-            int userSelection = fileChooser.showSaveDialog(null);
-
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-                File fileToSave = fileChooser.getSelectedFile();
-                try (FileOutputStream fileOut = new FileOutputStream(fileToSave)) {
-                    workbook.write(fileOut);
-                    JOptionPane.showMessageDialog(null, "Xuất dữ liệu thành công!");
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Lỗi khi lưu file: " + e.getMessage());
-                }
-            }
-
-            // Đóng kết nối và giải phóng tài nguyên
-            cn.close();
-            workbook.close();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Lỗi khi xuất dữ liệu: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
+//    public void exportToExcel() {
+//        try {
+//            Connect cn = new Connect(); // Kết nối đến cơ sở dữ liệu
+//            // Câu lệnh truy vấn để lấy dữ liệu từ bảng Users
+//            String query = "SELECT u.userId, u.username, u.password, u.email, "
+//                    + "u.phone, e.name AS empName, r.roleName "
+//                    + "FROM users u "
+//                    + "JOIN employees e ON u.empId = e.empId "
+//                    + "JOIN roles r ON u.roleId = r.roleId";
+//
+//            ResultSet resultSet = cn.selectQuery(query, new Object[0]); // Thực thi truy vấn
+//
+//            // Tạo workbook và sheet cho Excel
+//            Workbook workbook = new XSSFWorkbook();
+//            Sheet sheet = workbook.createSheet("User Data");
+//
+//            // Tạo tiêu đề cho bảng
+//            Row headerRow = sheet.createRow(0);
+//            String[] columns = {"User ID", "Username", "Password", "Email", "Phone", "Employee Name", "Role Name"};
+//
+//            for (int i = 0; i < columns.length; i++) {
+//                Cell cell = headerRow.createCell(i);
+//                cell.setCellValue(columns[i]);
+//            }
+//
+//            // Thêm dữ liệu vào sheet
+//            int rowNum = 1;
+//            while (resultSet.next()) {
+//                Row row = sheet.createRow(rowNum++);
+//                row.createCell(0).setCellValue(resultSet.getInt("userId"));
+//                row.createCell(1).setCellValue(resultSet.getString("username"));
+//                row.createCell(2).setCellValue(resultSet.getString("password"));
+//                row.createCell(3).setCellValue(resultSet.getString("email"));
+//                row.createCell(4).setCellValue(resultSet.getString("phone"));
+//                row.createCell(5).setCellValue(resultSet.getString("empName"));
+//                row.createCell(6).setCellValue(resultSet.getString("roleName"));
+//            }
+//
+//            // Mở hộp thoại để chọn vị trí và tên tệp để lưu
+//            JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Save Excel File");
+//            fileChooser.setSelectedFile(new File("user_data.xlsx"));
+//            int userSelection = fileChooser.showSaveDialog(null);
+//
+//            if (userSelection == JFileChooser.APPROVE_OPTION) {
+//                File fileToSave = fileChooser.getSelectedFile();
+//                try (FileOutputStream fileOut = new FileOutputStream(fileToSave)) {
+//                    workbook.write(fileOut);
+//                    JOptionPane.showMessageDialog(null, "Xuất dữ liệu thành công!");
+//                } catch (Exception e) {
+//                    JOptionPane.showMessageDialog(null, "Lỗi khi lưu file: " + e.getMessage());
+//                }
+//            }
+//
+//            // Đóng kết nối và giải phóng tài nguyên
+//            cn.close();
+//            workbook.close();
+//
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(null, "Lỗi khi xuất dữ liệu: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
     public void addUser() {
         String name = txtName.getText().trim();
         String password = txtPassword.getText().trim();
@@ -300,6 +300,7 @@ public class frmUser extends javax.swing.JInternalFrame {
         txtPhone.setText("");
         boxRole.setSelectedIndex(0);
         txtEployeesID.setText("");
+        txtSearch.setText("");
     }
 
     //kiêmr tra id, name đã tồn tại chưa
@@ -333,6 +334,65 @@ public class frmUser extends javax.swing.JInternalFrame {
             return rs.getInt("empId"); // Trả về empId nếu tìm thấy
         } else {
             throw new SQLException("Không tìm thấy nhân viên với tên: " + empName);
+        }
+    }
+
+    public void searchUsers() {
+        String searchTerm = txtSearch.getText().trim();  // Lấy giá trị từ ô tìm kiếm
+
+        if (searchTerm.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập từ khóa tìm kiếm!");
+            return;
+        }
+
+        try {
+            Connect cn = new Connect();
+
+            // Truy vấn tìm kiếm người dùng từ bảng users
+            String query = "SELECT u.userId, u.username, u.password, u.email, "
+                    + "u.phone, e.name AS empName, r.roleName "
+                    + "FROM users u "
+                    + "JOIN employees e ON u.empId = e.empId "
+                    + "JOIN roles r ON u.roleId = r.roleId "
+                    + "WHERE (u.userId LIKE ? OR u.username LIKE ? OR u.password LIKE ? "
+                    + "OR u.email LIKE ? OR u.phone LIKE ? OR e.name LIKE ? OR r.roleName LIKE ?)";
+
+            // Các tham số tìm kiếm
+            Object[] params = {
+                "%" + searchTerm + "%", // Tìm kiếm theo userId
+                "%" + searchTerm + "%", // Tìm kiếm theo username
+                "%" + searchTerm + "%", // Tìm kiếm theo password
+                "%" + searchTerm + "%", // Tìm kiếm theo email
+                "%" + searchTerm + "%", // Tìm kiếm theo phone
+                "%" + searchTerm + "%", // Tìm kiếm theo tên nhân viên
+                "%" + searchTerm + "%" // Tìm kiếm theo tên role
+            };
+
+            // Thực hiện truy vấn
+            ResultSet rs = cn.selectQuery(query, params);
+
+            // Xóa hết dữ liệu cũ trong bảng
+            DefaultTableModel model = (DefaultTableModel) tbUser.getModel();
+            model.setRowCount(0);  // Xóa tất cả các dòng trong bảng
+
+            // Duyệt qua kết quả trả về từ cơ sở dữ liệu và thêm vào bảng
+            while (rs.next()) {
+                int userId = rs.getInt("userId");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String empName = rs.getString("empName");
+                String roleName = rs.getString("roleName");
+
+                // Thêm dòng vào bảng (tbUser)
+                model.addRow(new Object[]{userId, username, password, email, phone, empName, roleName});
+            }
+
+            rs.close();  // Đóng kết quả trả về
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm người dùng! Lỗi: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -375,12 +435,9 @@ public class frmUser extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbUser = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        txtSearch = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
 
-        setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
         setResizable(true);
         setPreferredSize(new java.awt.Dimension(975, 650));
         setVisible(true);
@@ -444,6 +501,11 @@ public class frmUser extends javax.swing.JInternalFrame {
         boxRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton6.setText("Refresh");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("Exel");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
@@ -584,7 +646,7 @@ public class frmUser extends javax.swing.JInternalFrame {
             tbUser.getColumnModel().getColumn(6).setMinWidth(40);
         }
 
-        jButton5.setText("+ Create");
+        jButton5.setText("Search");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -597,17 +659,17 @@ public class frmUser extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(87, 87, 87)
                 .addComponent(jButton5)
-                .addGap(86, 86, 86))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -629,7 +691,7 @@ public class frmUser extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -701,8 +763,7 @@ public class frmUser extends javax.swing.JInternalFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-        panInput.setVisible(true);
-        clearText();
+        searchUsers();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void txtEployeesIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEployeesIDActionPerformed
@@ -712,6 +773,12 @@ public class frmUser extends javax.swing.JInternalFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         ExportUtils.exportTableToExcel(tbUser);
     }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        getUser();
+        clearText();
+    }//GEN-LAST:event_jButton6ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -733,7 +800,6 @@ public class frmUser extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JPanel panInput;
     private javax.swing.JTable tbUser;
     private javax.swing.JTextField txtEmail;
@@ -742,5 +808,6 @@ public class frmUser extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPassword;
     private javax.swing.JTextField txtPhone;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

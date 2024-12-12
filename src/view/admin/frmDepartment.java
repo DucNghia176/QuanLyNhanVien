@@ -270,10 +270,6 @@ public class frmDepartment extends javax.swing.JInternalFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
-        setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
-
         tbDepartment.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
